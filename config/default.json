@@ -1,0 +1,5 @@
+{
+  "port": 5000,
+  "jwtSecret" : "caselabgreenatom",
+  "mongoUri": "mongodb+srv://nazarenkoam:1234@cluster0.naaqo.azure.mongodb.net/app?retryWrites=true&w=majority"
+}

@@ -1,0 +1,20 @@
+1) должно быть в схеме
+2) в auth.routes в res.json запихать необходимый параметр
+3) в AuthPage в auth.login запихать в data.[xx]
+4) в AuthContext вставить
+5) чтобы оставалось в локал сторадже в auth.hook 
+	а) создать const [хх, setХх] = useState(null) 
+	б) localStorage.setItem
+	в) setUserLogin(loginName)
+	г) в localStorage.setItem в userХх: хх
+	д) очистить в логауте setUserХх(null)
+	е) в useEffect в login(data.xx)
+	ж) в ретёрне
+
+Чтобы использовать в компонентах
+
+import {AuthContext} from "../context/AuthContext"
+
+const auth = useContext(AuthContext)
+
+auth.xx
