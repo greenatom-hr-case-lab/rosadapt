@@ -6,7 +6,7 @@ export const CreatePage = () => {
     const message = useMessage()
     const {loading, request, error, clearError} = useHttp()
     const [form, setForm] = useState({
-        login: '', password: ''
+        firstName: '', middleName: '', lastName: '', role: 'tyro', dept: ''
     })
 
     useEffect(() =>{
@@ -24,7 +24,6 @@ export const CreatePage = () => {
 
     const registerHandler = async () => {
         try {
-            console.log({...form})
             const data = await request('/api/auth/register', 'POST', {...form})
             message(data.message)
         } catch (e) {}
@@ -44,27 +43,6 @@ export const CreatePage = () => {
                         <h5 className="card-title">Создайте новый профиль в системе РосАдапт</h5>
                         <p className="card-text">Введите поля логина и пароля</p>
                         <br/>
-                        <br/>
-                        <div className="input-group mb-3">
-                            <input type="text"
-                                   name="login"
-                                   className="form-control"
-                                   placeholder="Логин"
-                                   id="login"
-                                   onChange = { changeHandler }
-                            />
-                        </div>
-
-                        <div className="input-group mb-3">
-                            <input type="password"
-                                   name="password"
-                                   className="form-control"
-                                   placeholder="Пароль"
-                                   id="password"
-                                   onChange = { changeHandler }
-                            />
-                        </div>
-
                         <div className="input-group mb-3">
                             <div className="input-group-prepend">
                                 <label className="input-group-text" htmlFor="role">Тип</label>
@@ -74,12 +52,11 @@ export const CreatePage = () => {
                                     name="role" 
                                     onChange = { changeHandler }>
                                         
-                                <option defaultValue="tyro">Стажёр</option>
+                                <option defaultValue="tyro" value="tyro">Стажёр</option>
                                 <option value="hr">Сотрудник кадров</option>
                                 <option value="head">Руководитель</option>
                             </select>
                         </div>
-
                         <div className="input-group mb-3">
                             <input type="text"
                                    name="lastName"
@@ -109,8 +86,17 @@ export const CreatePage = () => {
                                    onChange = { changeHandler }
                             />
                         </div>
+                        <br />
+                        <div className="input-group mb-3">
+                            <input type="text"
+                                   name="dept"
+                                   className="form-control"
+                                   placeholder="Отдел"
+                                   id="dept"
+                                   onChange = { changeHandler }
+                            />
+                        </div>
 
-                        
                         <button
                            className="btn btn-primary"
                            onClick = { registerHandler }
@@ -118,6 +104,8 @@ export const CreatePage = () => {
                         >
                             Создать
                         </button>
+
+                        
                     </div>
                 </div>
             </div>

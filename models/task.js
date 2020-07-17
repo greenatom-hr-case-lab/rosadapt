@@ -1,24 +1,19 @@
 const {Schema, model, Types} = require('mongoose')
 
 const schema = new Schema({
-    skill: {
-        type: Boolean,
-        default: false
-    },
     name:{
         type: String,
         required: true
     },
-    mentor: {
-        type: String
+    description: {
+        type: String,
+        required: true
     },
-    valuation: String,
-    signatureName: String,
     done: {
         type: Boolean,
         default: false
     },
-    userLink: { 
+    headLink: { 
         type: Types.ObjectId, 
         ref: 'User'
     },

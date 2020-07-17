@@ -4,9 +4,6 @@ const config = require('config')
 const jwt = require('jsonwebtoken')
 const {check, validationResult} = require('express-validator')
 const User = require('../models/User')
-const Tyro = require('../models/Tyro')
-const Head = require('../models/Tyro')
-const Hr = require('../models/Hr')
 const router = Router()
 
 
@@ -15,8 +12,10 @@ const router = Router()
 router.post(
     '/register',
     [
-        check('login','Некорректный логин').exists(),
-        check('password', 'Минимальная длина пароля 4 символа').isLength({ min: 4})
+        check('firstName','Некорректное Имя').exists().isLength({ min: 2}),
+        check('middleName','Некорректное Отчество').exists().isLength({ min: 2}),
+        check('lastName','Некорректная Фамилия').exists().isLength({ min: 2}),
+        check('dept','Некорректная Фамилия').exists().isLength({ min: 2})
     ],
     async (req, res) => {
     try {
@@ -30,17 +29,65 @@ router.post(
             })
         }
 
-        const {login, password, role, firstName, middleName, lastName} = req.body
+        const {firstName, middleName, lastName, role, dept} = req.body
 
-        //const candidate = await User.findOne({ login: login })
+        //код создания логина
+        function rus_to_latin ( str ) {
+    
+            var ru = {
+                'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 
+                'е': 'e', 'ё': 'e', 'ж': 'j', 'з': 'z', 'и': 'i', 
+                'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 
+                'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
+                'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 
+                'щ': 'shch', 'ы': 'y', 'э': 'e', 'ю': 'u', 'я': 'ya'
+            }, n_str = [];
+            
+            str = str.replace(/[ъь]+/g, '').replace(/й/g, 'i');
+            
+            for ( var i = 0; i < str.length; ++i ) {
+               n_str.push(
+                      ru[ str[i] ]
+                   || ru[ str[i].toLowerCase() ] == undefined && str[i]
+                   || ru[ str[i].toLowerCase() ].replace(/^(.)/, function ( match ) { return match.toUpperCase() })
+               );
+            }
+            
+            return n_str.join('');
+        }
+        var login = rus_to_latin(lastName).toLowerCase() + '.' + rus_to_latin(firstName)[0].toLowerCase() + '.' + rus_to_latin(middleName)[0].toLowerCase()
+        //проверка существования логина
+        var candidate = await User.findOne({ login })
 
-        // if (candidate){
-        //     return res.status(400).json({ message: 'Такой сотрудник уже существует в базе' })
+        if (candidate) {
+            return res.status(400).json({
+                errors: errors.array(),
+                message: 'Пользователь уже существует'
+            })
+        }
+
+
+        // if (candidate) {
+        //     User.find({
+        //         login
+        //     }).exec(function(err, users) {
+        //         if (err) throw err
+                 
+        //         login += '.' + (users.length + 1) ///////////////////////??????????????????? не работает
+        //     })
         // }
+        //создание пароля
+        function randomString(i) {
+            var rnd = ''
+            while (rnd.length < i) 
+                rnd += Math.random().toString(36).substring(2)
+            return rnd.substring(0, i)
+        }
+
+        const password = randomString(4);
 
         const hashedPassword = await bcrypt.hash(password, 12)
-        //console.log('2',req.body)
-        const user = new Tyro({ 
+        const user = new User({  
             login: login, 
             password: hashedPassword, 
             role: role, 
@@ -48,18 +95,10 @@ router.post(
                 firstName: firstName, 
                 middleName: middleName, 
                 lastName: lastName
-            } 
+            },
+            dept: dept
         })
-        // switch (role) {
-        //     case 'Стажёр':
-        //         //console.log(login, password, role, firstName, middleName, lastName)
-        //         //user = new Tyro({ login, password: hashedPassword, role, firstName, middleName, lastName })
-        //         break;
-        
-        //     default:
-        //         break;
-        // }
-        //const user = new Tyro({ login, password: hashedPassword })
+
         console.log(user)
         await user.save()
 
@@ -90,7 +129,7 @@ router.post(
 
         const {login, password} = req.body
 
-        //const user = await User.findOne({ login })
+        const user = await User.findOne({ login })
 
         if (!user) {
             return res.status(400).json({ message: 'Такого пользователя не существует'})

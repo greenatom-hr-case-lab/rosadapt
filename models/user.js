@@ -10,6 +10,48 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    name:{
+        firstName: {
+            type: String,
+            required: true
+        },
+        middleName: {
+            type: String,
+            required: true
+        },
+        lastName: {
+            type: String,
+            required: true
+        }
+    },
+    role: {
+        type: String,
+        required: true
+    },
+    dept: {
+        type: String,
+        required: true
+    },
+    pos: {
+        type: String,
+        required: true
+    },
+    headLink: { 
+        type: Types.ObjectId, 
+        ref: 'User'
+    },
+    dates: {
+        dateB: Date,
+        dateStart: { 
+            type: Date,
+            default: Date.now
+        },
+        dateEnd: Date,
+        dateCreated: { 
+            type: Date,
+            default: Date.now
+        }
+    },
     email: {
         address:{
             type: String,
@@ -36,52 +78,6 @@ const schema = new Schema({
         visSub: {
             type: Boolean,
             default: false
-        }
-    },
-    name:{
-        firstName: {
-            type: String,
-            required: true
-        },
-        middleName: {
-            type: String,
-            required: true
-        },
-        lastName: {
-            type: String,
-            required: true
-        }
-    },
-    dept: {
-        type: String,
-        required: true
-    },
-    role: {
-        type: String,
-        required: true
-    },
-    headLink: { 
-        type: Types.ObjectId, 
-        ref: 'User'
-    },
-    mentorName: {
-        firstName: String,
-        middleName: String,
-        lastName: String
-    },
-    dates: {
-        dateB: Date,
-        dateStart: { 
-            type: Date,
-            default: Date.now
-        },
-        dateEnd: { 
-            type: Date,
-            required: true
-        },
-        dateCreated: { 
-            type: Date,
-            default: Date.now
         }
     }
 })
