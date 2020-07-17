@@ -1,17 +1,12 @@
 const {Schema, model, Types} = require('mongoose')
 
 const schema = new Schema({
+    skill: {
+        type: Boolean,
+        default: false
+    },
     name:{
         type: String,
-        required: true
-    },
-    dateStart: { 
-        type: Date,
-        default: Date.now,
-        required: true
-    },
-    dateEnd: { 
-        type: Date,
         required: true
     },
     mentor: {
@@ -23,13 +18,24 @@ const schema = new Schema({
         type: Boolean,
         default: false
     },
-    tyroLink: { 
+    userLink: { 
         type: Types.ObjectId, 
-        ref: 'tyro'
+        ref: 'User'
     },
-    created: { 
-        type: Date,
-        default: Date.now
+    date:{
+        dateStart: {
+            type: Date,
+            default: Date.now,
+            required: true
+        },
+        dateEnd: { 
+            type: Date,
+            required: true
+        },
+        created: { 
+            type: Date,
+            default: Date.now
+        }
     }
 })
 
