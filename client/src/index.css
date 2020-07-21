@@ -78,3 +78,18 @@
 .nav-link{
     margin-right: 20px;
 }
+
+.custom-select{
+    border: 1px solid #ced4da;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.custom-select::after {
+    left:30;
+}
+
+.input-group-text{
+    border-radius: 0.25rem 0 0 0.25rem;
+
+}

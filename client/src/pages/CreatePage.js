@@ -59,6 +59,26 @@ export const CreatePage = () => {
                         </div>
                         <div className="input-group mb-3">
                             <input type="text"
+                                   name="login"
+                                   className="form-control"
+                                   placeholder="Логин"
+                                   id="login"
+                                   onChange = { changeHandler }
+                            />
+                        </div>
+
+                        <div className="input-group mb-3">
+                            <input type="password"
+                                   name="password"
+                                   className="form-control"
+                                   placeholder="Пароль"
+                                   id="password"
+                                   onChange = { changeHandler }
+                            />
+                        </div>
+                        <br />
+                        <div className="input-group mb-3">
+                            <input type="text"
                                    name="lastName"
                                    className="form-control"
                                    placeholder="Фамилия"
@@ -93,6 +113,15 @@ export const CreatePage = () => {
                                    className="form-control"
                                    placeholder="Отдел"
                                    id="dept"
+                                   onChange = { changeHandler }
+                            />
+                        </div>
+                        <div className="input-group mb-3">
+                            <input type="text"
+                                   name="pos"
+                                   className="form-control"
+                                   placeholder="Должность"
+                                   id="pos"
                                    onChange = { changeHandler }
                             />
                         </div>

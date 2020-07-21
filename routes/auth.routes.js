@@ -12,10 +12,13 @@ const router = Router()
 router.post(
     '/register',
     [
-        check('firstName','Некорректное Имя').exists().isLength({ min: 2}),
-        check('middleName','Некорректное Отчество').exists().isLength({ min: 2}),
-        check('lastName','Некорректная Фамилия').exists().isLength({ min: 2}),
-        check('dept','Некорректная Фамилия').exists().isLength({ min: 2})
+        check('login','Некорректный логин').exists().isLength({ min: 2}),
+        check('password','Некорректный пароль').exists().isLength({ min: 4}),
+        check('firstName','Некорректное имя').exists().isLength({ min: 2}),
+        check('middleName','Некорректное отчество').exists().isLength({ min: 2}),
+        check('lastName','Некорректная фамилия').exists().isLength({ min: 2}),
+        check('dept','Некорректный отдел').exists().isLength({ min: 2}),
+        check('pos','Некорректная должность').exists().isLength({ min: 2})
     ],
     async (req, res) => {
     try {
@@ -29,33 +32,33 @@ router.post(
             })
         }
 
-        const {firstName, middleName, lastName, role, dept} = req.body
+        const {login, password, firstName, middleName, lastName, role, dept, pos} = req.body
 
         //код создания логина
-        function rus_to_latin ( str ) {
+        // function rus_to_latin ( str ) {
     
-            var ru = {
-                'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 
-                'е': 'e', 'ё': 'e', 'ж': 'j', 'з': 'z', 'и': 'i', 
-                'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 
-                'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
-                'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 
-                'щ': 'shch', 'ы': 'y', 'э': 'e', 'ю': 'u', 'я': 'ya'
-            }, n_str = [];
+        //     var ru = {
+        //         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 
+        //         'е': 'e', 'ё': 'e', 'ж': 'j', 'з': 'z', 'и': 'i', 
+        //         'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 
+        //         'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
+        //         'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 
+        //         'щ': 'shch', 'ы': 'y', 'э': 'e', 'ю': 'u', 'я': 'ya'
+        //     }, n_str = [];
             
-            str = str.replace(/[ъь]+/g, '').replace(/й/g, 'i');
+        //     str = str.replace(/[ъь]+/g, '').replace(/й/g, 'i');
             
-            for ( var i = 0; i < str.length; ++i ) {
-               n_str.push(
-                      ru[ str[i] ]
-                   || ru[ str[i].toLowerCase() ] == undefined && str[i]
-                   || ru[ str[i].toLowerCase() ].replace(/^(.)/, function ( match ) { return match.toUpperCase() })
-               );
-            }
+        //     for ( var i = 0; i < str.length; ++i ) {
+        //        n_str.push(
+        //               ru[ str[i] ]
+        //            || ru[ str[i].toLowerCase() ] == undefined && str[i]
+        //            || ru[ str[i].toLowerCase() ].replace(/^(.)/, function ( match ) { return match.toUpperCase() })
+        //        );
+        //     }
             
-            return n_str.join('');
-        }
-        var login = rus_to_latin(lastName).toLowerCase() + '.' + rus_to_latin(firstName)[0].toLowerCase() + '.' + rus_to_latin(middleName)[0].toLowerCase()
+        //     return n_str.join('');
+        // }
+        //var login = rus_to_latin(lastName).toLowerCase() + '.' + rus_to_latin(firstName)[0].toLowerCase() + '.' + rus_to_latin(middleName)[0].toLowerCase()
         //проверка существования логина
         var candidate = await User.findOne({ login })
 
@@ -77,26 +80,28 @@ router.post(
         //     })
         // }
         //создание пароля
-        function randomString(i) {
-            var rnd = ''
-            while (rnd.length < i) 
-                rnd += Math.random().toString(36).substring(2)
-            return rnd.substring(0, i)
-        }
+        // function randomString(i) {
+        //     var rnd = ''
+        //     while (rnd.length < i) 
+        //         rnd += Math.random().toString(36).substring(2)
+        //     return rnd.substring(0, i)
+        // }
 
-        const password = randomString(4);
+        // const password = randomString(4);
 
         const hashedPassword = await bcrypt.hash(password, 12)
         const user = new User({  
-            login: login, 
+            login, 
             password: hashedPassword, 
-            role: role, 
+            role,
+            dept,
+            pos, 
             name: {
                 firstName: firstName, 
                 middleName: middleName, 
                 lastName: lastName
-            },
-            dept: dept
+            }
+
         })
 
         console.log(user)
