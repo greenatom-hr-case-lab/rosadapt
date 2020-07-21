@@ -27,6 +27,7 @@ export const ProfilePage = () => {
         default:
             roleRus = null
     }
+
     return(
         <div className='container'>
             <h1>{lastName} {firstName} {middleName}</h1>

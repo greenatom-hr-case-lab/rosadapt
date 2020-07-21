@@ -20,7 +20,7 @@ router.post(
         check('lastName','Некорректная фамилия').exists().isLength({ min: 2}),
         check('dept','Некорректный отдел').exists().isLength({ min: 2}),
         check('pos','Некорректная должность').exists().isLength({ min: 2})
-    ],
+    ], authMW,
     async (req, res) => {
     try {
 
@@ -97,8 +97,8 @@ router.post(
                 firstName: firstName, 
                 middleName: middleName, 
                 lastName: lastName
-            }
-
+            },
+            hrLink: req.user.userId
         })
 
         console.log(user)

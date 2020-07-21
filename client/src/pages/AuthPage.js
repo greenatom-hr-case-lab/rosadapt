@@ -24,11 +24,13 @@ export const AuthPage = () => {
         setForm({ ...form, [event.target.name]: event.target.value })
     }
 
-    const registerHandler = async () => {
-        try {
-            const data = await request('/api/auth/register', 'POST', {...form})
-            message(data.message)
-        } catch (e) {}
+    const pressHandler = async event => {
+        if (event.key === 'Enter') {
+            try {
+                const data = await request('/api/auth/login', 'POST', {...form})
+                auth.login(data.token, data.userId, data.userLogin, data.userRole, data.userData)
+            } catch (e) {}
+        }
     }
 
     const loginHandler = async () => {
@@ -60,6 +62,7 @@ export const AuthPage = () => {
                                    placeholder="Логин"
                                    id="login"
                                    onChange = { changeHandler }
+                                   onKeyPress={ pressHandler }
                             />
                         </div>
 
@@ -70,6 +73,7 @@ export const AuthPage = () => {
                                    placeholder="Пароль"
                                    id="password"
                                    onChange = { changeHandler }
+                                   onKeyPress={ pressHandler }
                             />
                         </div>
 
@@ -80,13 +84,7 @@ export const AuthPage = () => {
                         >
                             Авторизоваться
                         </button>
-                        <button
-                           className="btn btn-primary"
-                           onClick = { registerHandler }
-                           disabled={loading}
-                        >
-                            Регистрация
-                        </button>
+
                     </div>
                 </div>
             </div>
