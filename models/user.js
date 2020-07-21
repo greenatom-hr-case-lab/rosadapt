@@ -40,6 +40,10 @@ const schema = new Schema({
         type: Types.ObjectId, 
         ref: 'User'
     },
+    hrLink: {
+        type: Types.ObjectId,
+        ref: 'User'
+    },
     dates: {
         dateB: Date,
         dateStart: { 

@@ -1,26 +1,33 @@
 import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
-import {LinksPage} from "./pages/LinksPage";
+import {ProfilePage} from "./pages/ProfilePage";
 import {CreatePage} from "./pages/CreatePage";
-import {DetailPage} from "./pages/DetailPage";
 import {AuthPage} from "./pages/AuthPage";
 
-export const useRoutes = isAuthenticated => {
+export const useRoutes = (isAuthenticated, userRole) => {
     if (isAuthenticated){
-        return(
-            <Switch>
-                <Route path="/links" exact>
-                    <LinksPage />
-                </Route>
-                <Route path="/create" exact>
-                    <CreatePage />
-                </Route>
-                <Route path="/detail/:id" exact>
-                    <DetailPage />
-                </Route>
-                <Redirect to="/create" />
-            </Switch>
-        )
+        if (userRole === 'tyro'){
+            return(
+                <Switch>
+                    <Route path="/profile" exact>
+                        <ProfilePage />
+                    </Route>
+                    <Redirect to="/profile" />
+                </Switch>
+            )
+        } else {
+            return(
+                <Switch>
+                    <Route path="/create" exact>
+                        <CreatePage />
+                    </Route>
+                    <Route path="/profile" exact>
+                        <ProfilePage />
+                    </Route>
+                    <Redirect to="/profile" />
+                </Switch>
+            )
+        }
     }
 
     return (

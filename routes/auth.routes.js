@@ -2,6 +2,7 @@ const {Router} = require('express')
 const bcrypt = require('bcryptjs')
 const config = require('config')
 const jwt = require('jsonwebtoken')
+const authMW = require('../middleware/auth.middleware')
 const {check, validationResult} = require('express-validator')
 const User = require('../models/User')
 const router = Router()
@@ -68,14 +69,11 @@ router.post(
                 message: 'Пользователь уже существует'
             })
         }
-
-
         // if (candidate) {
         //     User.find({
         //         login
         //     }).exec(function(err, users) {
         //         if (err) throw err
-                 
         //         login += '.' + (users.length + 1) ///////////////////////??????????????????? не работает
         //     })
         // }
@@ -86,7 +84,6 @@ router.post(
         //         rnd += Math.random().toString(36).substring(2)
         //     return rnd.substring(0, i)
         // }
-
         // const password = randomString(4);
 
         const hashedPassword = await bcrypt.hash(password, 12)
@@ -152,8 +149,7 @@ router.post(
                     config.get('jwtSecret'),
             { expiresIn: '1h'}
         )
-
-        await res.json({token, userId: user.id, userLogin: user.login})
+        await res.json({token, userId: user.id, userLogin: user.login, userRole: user.role, userData: user})
 
     } catch (e) {
         await res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

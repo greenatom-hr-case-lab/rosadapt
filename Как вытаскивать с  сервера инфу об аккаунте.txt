@@ -4,17 +4,16 @@
 4) в AuthContext вставить
 5) чтобы оставалось в локал сторадже в auth.hook 
 	а) создать const [хх, setХх] = useState(null) 
-	б) localStorage.setItem
-	в) setUserLogin(loginName)
+	б) setUserXX(loginXX)
+	в) localStorage.setItem
 	г) в localStorage.setItem в userХх: хх
 	д) очистить в логауте setUserХх(null)
 	е) в useEffect в login(data.xx)
 	ж) в ретёрне
 
+
 Чтобы использовать в компонентах
-
-import {AuthContext} from "../context/AuthContext"
-
-const auth = useContext(AuthContext)
-
-auth.xx
+0)import React, {useContext} from 'react'
+1)import {AuthContext} from "../context/AuthContext"
+2)const auth = useContext(AuthContext)
+3)auth.xx
