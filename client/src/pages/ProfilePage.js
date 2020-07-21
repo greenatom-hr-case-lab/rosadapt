@@ -11,6 +11,8 @@ export const ProfilePage = () => {
     const firstName = getNested(auth.userData, ['name', 'firstName'])
     const middleName = getNested(auth.userData, ['name', 'middleName'])
     const lastName = getNested(auth.userData, ['name', 'lastName'])
+    const pos = getNested(auth.userData, ['pos'])
+    const dept = getNested(auth.userData, ['dept'])
     let roleRus = null
     switch (auth.userRole) {
         case 'hr':
@@ -29,8 +31,9 @@ export const ProfilePage = () => {
         <div className='container'>
             <h1>{lastName} {firstName} {middleName}</h1>
             <h3>{roleRus}</h3>
-            {}
-            {/*<h1>{auth.userData.name.firstName}</h1>*/}
+            <br/>
+            <h4>{dept}</h4>
+            <h4>{pos}</h4>
         </div>
     )
 }
