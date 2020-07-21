@@ -23,7 +23,7 @@ export const Navbar = () => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav mr-auto">
+                    <ul className="navbar-nav ml-auto">
                         <li className="nav-item active">
                             <NavLink to="/create" className="nav-link">Создать<span className="sr-only">(current)</span></NavLink>
                         </li>
