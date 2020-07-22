@@ -7,10 +7,6 @@ export const CreatePage = () => {
     const auth = useContext(AuthContext)
     const message = useMessage()
     const {loading, request, error, clearError} = useHttp()
-    const [form, setForm] = useState({
-        firstName: '', middleName: '', lastName: '', role: 'tyro', dept: ''
-    })
-
     const dateNow = () => {
         const date = new Date()
         let yyyy = date.getFullYear()
@@ -31,6 +27,12 @@ export const CreatePage = () => {
         if(dd<10) { dd = '0' + dd }
         return yyyy+'-'+mm+'-'+dd
     }
+
+    const [form, setForm] = useState({
+        firstName: '', middleName: '', lastName: '', role: 'tyro', dept: '', pos: '', headId: '', probationStart: dateNow(), probationEnd: dateITM(dateNow())
+    })
+
+
     useEffect(() =>{
         message(error)
         clearError()
@@ -50,8 +52,8 @@ export const CreatePage = () => {
         }
         if (event.target.name === 'probationStart'){
             document.getElementById('probationEnd').value = dateITM(event.target.value)
+            form.probationEnd = dateITM(event.target.value)
         }
-        console.log(document.getElementById('probationEnd').value)
         setForm({ ...form, [event.target.name]: event.target.value })
     }
 
@@ -164,10 +166,10 @@ export const CreatePage = () => {
                         <div id="tyroBlock">
                             <div className="input-group mb-3">
                                 <input type="text"
-                                         name="headName"
+                                         name="headId"
                                          className="form-control"
                                          placeholder="Руководитель"
-                                         id="headName"
+                                         id="headId"
                                          onChange = { changeHandler }
                                 />
                             </div>

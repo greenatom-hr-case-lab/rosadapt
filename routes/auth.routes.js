@@ -33,7 +33,8 @@ router.post(
             })
         }
 
-        const {login, password, firstName, middleName, lastName, role, dept, pos} = req.body
+        const {login, password, firstName, middleName, lastName, role, dept, pos, headId, probationStart, probationEnd} = req.body
+        console.log(probationEnd)
 
         //код создания логина
         // function rus_to_latin ( str ) {
@@ -87,21 +88,41 @@ router.post(
         // const password = randomString(4);
 
         const hashedPassword = await bcrypt.hash(password, 12)
-        const user = new User({  
-            login, 
-            password: hashedPassword, 
-            role,
-            dept,
-            pos, 
-            name: {
-                firstName: firstName, 
-                middleName: middleName, 
-                lastName: lastName
-            },
-            hrLink: req.user.userId
-        })
-
-        console.log(user)
+        let user
+        if (role === 'tyro'){
+            user = new User({
+                login,
+                password: hashedPassword,
+                role,
+                dept,
+                pos,
+                name: {
+                    firstName: firstName,
+                    middleName: middleName,
+                    lastName: lastName
+                },
+                hrLink: req.user.userId,
+                headLink: '5f172d4a69ffe152f0ffafdf',
+                dates: {
+                    dateStart: probationStart,
+                    dateEnd: probationEnd
+                }
+            })
+        } else {
+            user = new User({
+                login,
+                password: hashedPassword,
+                role,
+                dept,
+                pos,
+                name: {
+                    firstName: firstName,
+                    middleName: middleName,
+                    lastName: lastName
+                },
+                hrLink: req.user.userId
+            })
+        }
         await user.save()
 
         await res.status(201).json({message: 'Профиль создан'})

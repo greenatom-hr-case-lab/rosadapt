@@ -46,10 +46,7 @@ const schema = new Schema({
     },
     dates: {
         dateB: Date,
-        dateStart: { 
-            type: Date,
-            default: Date.now
-        },
+        dateStart: Date,
         dateEnd: Date,
         dateCreated: { 
             type: Date,
