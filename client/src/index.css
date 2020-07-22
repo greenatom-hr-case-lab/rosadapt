@@ -103,3 +103,7 @@ h3, h4{
 body{
     font-family: 'Montserrat', sans-serif;
 }
+
+#tyroBlock #probationStart{
+    margin-right: 2rem;
+}

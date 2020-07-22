@@ -18,20 +18,19 @@ export const ProfilePage = () => {
         case 'hr':
             roleRus = 'Сотрудник кадровой службы'
             break
-        case 'tyro':
-            roleRus = 'Стажёр'
-            break
         case 'head':
             roleRus = 'Руководитель'
             break
         default:
-            roleRus = null
+            roleRus = 'Стажёр'
     }
+
+
 
     return(
         <div className='container'>
             <h1>{lastName} {firstName} {middleName}</h1>
-            <h3>{roleRus}</h3>
+            <h3>Роль: {roleRus.toLowerCase()}</h3>
             <br/>
             <h4>{dept}</h4>
             <h4>{pos}</h4>

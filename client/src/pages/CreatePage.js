@@ -11,6 +11,26 @@ export const CreatePage = () => {
         firstName: '', middleName: '', lastName: '', role: 'tyro', dept: ''
     })
 
+    const dateNow = () => {
+        const date = new Date()
+        let yyyy = date.getFullYear()
+        let mm = date.getMonth() + 1
+        let dd = date.getDate()
+        if(mm<10) { mm = '0' + mm }
+        if(dd<10) { dd = '0' + dd }
+        return yyyy+'-'+mm+'-'+dd
+        //D.setMonth(D.getMonth() + 3);
+    }
+    const dateITM = (el) => {
+        const date = new Date(el)
+        date.setMonth(date.getMonth() + 3)
+        let yyyy = date.getFullYear()
+        let mm = date.getMonth() + 1
+        let dd = date.getDate()
+        if(mm<10) { mm = '0' + mm }
+        if(dd<10) { dd = '0' + dd }
+        return yyyy+'-'+mm+'-'+dd
+    }
     useEffect(() =>{
         message(error)
         clearError()
@@ -21,6 +41,17 @@ export const CreatePage = () => {
     }, [])
 
     const changeHandler = event => {
+        if (event.target.name === 'role') {
+            if (event.target.value === 'tyro'){
+                document.getElementById('tyroBlock').style.display = 'block'
+            }else {
+                document.getElementById('tyroBlock').style.display = 'none'
+            }
+        }
+        if (event.target.name === 'probationStart'){
+            document.getElementById('probationEnd').value = dateITM(event.target.value)
+        }
+        console.log(document.getElementById('probationEnd').value)
         setForm({ ...form, [event.target.name]: event.target.value })
     }
 
@@ -128,6 +159,38 @@ export const CreatePage = () => {
                                    id="pos"
                                    onChange = { changeHandler }
                             />
+                        </div>
+
+                        <div id="tyroBlock">
+                            <div className="input-group mb-3">
+                                <input type="text"
+                                         name="headName"
+                                         className="form-control"
+                                         placeholder="Руководитель"
+                                         id="headName"
+                                         onChange = { changeHandler }
+                                />
+                            </div>
+                            <div className="input-group mb-3">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">с</span>
+                                </div>
+                                <input type="date" id="probationStart" name="probationStart" className="form-control"
+                                       max="2099-12-12"
+                                       defaultValue={dateNow()}
+                                       onChange = { changeHandler }
+                                />
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">по</span>
+                                </div>
+                                <input type="date" id="probationEnd" name="probationEnd" className="form-control"
+                                       max="2099-12-12"
+                                       placeholder="дата окончания"
+                                       defaultValue={dateITM(dateNow())}
+                                       onChange = { changeHandler }
+                                />
+                            </div>
+
                         </div>
 
                         <button
