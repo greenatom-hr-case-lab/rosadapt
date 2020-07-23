@@ -56,7 +56,6 @@ export const ListForHr = () => {
 
     return(
         <div className="listOfUsersForHr">
-            <h1>это список всех пользователей</h1>
             <button
                 className="btn btn-primary"
                 id="showMyTyrosBtn"

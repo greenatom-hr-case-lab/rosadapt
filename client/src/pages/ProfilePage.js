@@ -27,6 +27,7 @@ export const ProfilePage = () => {
                     <br/>
                     <h4>{dept}</h4>
                     <h4>{pos}</h4>
+                    <br/>
                     <ListForHr />
                 </div>
             )
@@ -38,6 +39,7 @@ export const ProfilePage = () => {
                     <br/>
                     <h4>{dept}</h4>
                     <h4>{pos}</h4>
+                    <br/>
                     <ListForHead />
                 </div>
             )

@@ -14,7 +14,7 @@ router.post(
             const {role, sub} = req.body
 
             let users
-            switch (role + sub) {sort( { "item.category": 1, "item.type": 1 } )
+            switch (role + sub){
                 case 'tyroown':
                     users = await User.find({ role, hrLink: req.user.userId}).sort({ "role": 1, "name.lastName": 1})
                     break
