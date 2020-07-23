@@ -82,7 +82,7 @@ export const CreatePage = () => {
                         <br/>
                         <div className="input-group mb-3">
                             <div className="input-group-prepend">
-                                <label className="input-group-text" htmlFor="role">Тип</label>
+                                <label className="input-group-text" htmlFor="role">Роль</label>
                             </div>
                             <select className="custom-select" 
                                     id="role" 
@@ -95,87 +95,95 @@ export const CreatePage = () => {
                             </select>
                         </div>
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="login"
-                                   className="form-control"
-                                   placeholder="Логин"
                                    id="login"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="login" className="input-group-text">Логин</label>
+                            </div>
                         </div>
 
                         <div className="input-group mb-3">
-                            <input type="password"
+                            <input type="password" className="form-control"
                                    name="password"
-                                   className="form-control"
-                                   placeholder="Пароль"
                                    id="password"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="password" className="input-group-text">Пароль</label>
+                            </div>
                         </div>
                         <br />
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="lastName"
-                                   className="form-control"
-                                   placeholder="Фамилия"
                                    id="lastName"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="lastName" className="input-group-text">Фамилия</label>
+                            </div>
                         </div>
 
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="firstName"
-                                   className="form-control"
-                                   placeholder="Имя"
                                    id="firstName"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="firstName" className="input-group-text">Имя</label>
+                            </div>
                         </div>
 
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="middleName"
-                                   className="form-control"
-                                   placeholder="Отчество"
                                    id="middleName"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="middleName" className="input-group-text">Отчество</label>
+                            </div>
                         </div>
                         <br />
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="dept"
-                                   className="form-control"
-                                   placeholder="Отдел"
                                    id="dept"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="dept" className="input-group-text">Отдел</label>
+                            </div>
                         </div>
                         <div className="input-group mb-3">
-                            <input type="text"
+                            <input type="text" className="form-control"
                                    name="pos"
-                                   className="form-control"
-                                   placeholder="Должность"
                                    id="pos"
                                    onChange = { changeHandler }
                             />
+                            <div className="input-group-append">
+                                <label htmlFor="pos" className="input-group-text">Должность</label>
+                            </div>
                         </div>
 
-                        <div id="tyroBlock">
+                        <div id="tyroBlock"> {/*Отсек с параметрами для TYRO*/}
                             <div className="input-group mb-3">
-                                <input type="text"
-                                         name="headId"
-                                         className="form-control"
-                                         placeholder="Руководитель"
-                                         id="headId"
-                                         onChange = { changeHandler }
+                                <input type="text" className="form-control"
+                                       name="headId"
+                                       id="headId"
+                                       onChange = { changeHandler }
                                 />
+                                <div className="input-group-append">
+                                    <label htmlFor="headId" className="input-group-text">Руководитель</label>
+                                </div>
                             </div>
                             <div className="input-group mb-3">
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text">с</span>
+                                    <label htmlFor="probationStart" className="input-group-text">с</label>
                                 </div>
                                 <input type="date" id="probationStart" name="probationStart" className="form-control"
                                        max="2099-12-12"
@@ -183,7 +191,7 @@ export const CreatePage = () => {
                                        onChange = { changeHandler }
                                 />
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text">по</span>
+                                    <label htmlFor="probationEnd" className="input-group-text">по</label>
                                 </div>
                                 <input type="date" id="probationEnd" name="probationEnd" className="form-control"
                                        max="2099-12-12"
