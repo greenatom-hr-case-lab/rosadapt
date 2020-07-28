@@ -1,12 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {useMessage} from "../hooks/message.hook"
-import {AuthContext} from "../context/AuthContext";
+import {AuthContext} from "../context/AuthContext"
 
 export const CreatePage = () => {
     const auth = useContext(AuthContext)
     const message = useMessage()
     const {loading, request, error, clearError} = useHttp()
+    const [users, setUsers] = useState([])
     const dateNow = () => {
         const date = new Date()
         let yyyy = date.getFullYear()
@@ -32,15 +33,13 @@ export const CreatePage = () => {
         firstName: '', middleName: '', lastName: '', role: 'tyro', dept: '', pos: '', headId: '', probationStart: dateNow(), probationEnd: dateITM(dateNow())
     })
 
-
     useEffect(() =>{
         message(error)
         clearError()
-    }, [error, message, clearError])
-
-    useEffect( () => {
+        getListOfHeads()
         window.M.updateTextFields()
-    }, [])
+
+    }, [error, message, clearError])
 
     const changeHandler = event => {
         if (event.target.name === 'role') {
@@ -59,10 +58,20 @@ export const CreatePage = () => {
 
     const registerHandler = async () => {
         try {
-            const data = await request('/api/auth/register', 'POST', {...form}, {
+            console.log({...form})
+            // const data = await request('/api/auth/register', 'POST', {...form}, {
+            //     Authorization: `Bearer ${auth.token}`
+            // })
+            message('лог в консоли, реквест заковычен')
+        } catch (e) {}
+    }
+
+    const getListOfHeads = async () => {
+        try {
+            const data = await request('/api/list/listUsers', 'POST', {role: 'head', sub: 'all'}, {
                 Authorization: `Bearer ${auth.token}`
             })
-            message(data.message)
+            setUsers(data.users)
         } catch (e) {}
     }
 
@@ -76,7 +85,7 @@ export const CreatePage = () => {
                 <br/>
                 <br/>
                 <div className="card">
-                    <div className="card-body">
+                    <form className="card-body">
                         <h5 className="card-title">Создайте новый профиль в системе РосАдапт</h5>
                         <p className="card-text">Введите поля логина и пароля</p>
                         <br/>
@@ -84,7 +93,7 @@ export const CreatePage = () => {
                             <div className="input-group-prepend">
                                 <label className="input-group-text" htmlFor="role">Роль</label>
                             </div>
-                            <select className="custom-select" 
+                            <select className="custom-select"
                                     id="role" 
                                     name="role" 
                                     onChange = { changeHandler }>
@@ -117,7 +126,7 @@ export const CreatePage = () => {
                         </div>
                         <br />
                         <div className="input-group mb-3">
-                            <input type="text" className="form-control"
+                            <input type="text" className="form-control" required
                                    name="lastName"
                                    id="lastName"
                                    onChange = { changeHandler }
@@ -172,22 +181,30 @@ export const CreatePage = () => {
 
                         <div id="tyroBlock"> {/*Отсек с параметрами для TYRO*/}
                             <div className="input-group mb-3">
-                                <input type="text" className="form-control"
-                                       name="headId"
-                                       id="headId"
-                                       onChange = { changeHandler }
-                                />
+                                <select className="custom-select"
+                                        id="headId"
+                                        name="headId"
+                                        onChange = { changeHandler }>
+                                    <option value=""></option>
+                                    { users.map((user, index) => {
+                                        return (
+                                            <option key={user._id} value={user._id}>{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</option>
+                                        )
+                                    }) }
+
+                                </select>
                                 <div className="input-group-append">
                                     <label htmlFor="headId" className="input-group-text">Руководитель</label>
                                 </div>
                             </div>
+
                             <div className="input-group mb-3">
                                 <div className="input-group-prepend">
                                     <label htmlFor="probationStart" className="input-group-text">с</label>
                                 </div>
                                 <input type="date" id="probationStart" name="probationStart" className="form-control"
                                        max="2099-12-12"
-                                       defaultValue={dateNow()}
+                                       defaultValue={ dateNow() }
                                        onChange = { changeHandler }
                                 />
                                 <div className="input-group-prepend">
@@ -196,7 +213,7 @@ export const CreatePage = () => {
                                 <input type="date" id="probationEnd" name="probationEnd" className="form-control"
                                        max="2099-12-12"
                                        placeholder="дата окончания"
-                                       defaultValue={dateITM(dateNow())}
+                                       defaultValue={ dateITM(dateNow()) }
                                        onChange = { changeHandler }
                                 />
                             </div>
@@ -204,15 +221,15 @@ export const CreatePage = () => {
                         </div>
 
                         <button
-                           className="btn btn-primary"
+                           className="btn btn-primary" type="submit"
                            onClick = { registerHandler }
-                           disabled={loading}
+                           disabled={ loading }
                         >
                             Создать
                         </button>
 
                         
-                    </div>
+                    </form>
                 </div>
             </div>
 

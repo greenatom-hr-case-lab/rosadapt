@@ -1,79 +1,44 @@
 import React, {useContext} from 'react'
 import {NavLink, useHistory} from "react-router-dom"
 import {AuthContext} from "../context/AuthContext"
+import LogoSVG from "../img/logo.svg"
+import LogoutSVG from "../img/logout.svg"
 
-export const Navbar = () => {
+export const Navbar = ({ roleRus }) => {
     const history = useHistory()
-    const auth = useContext(AuthContext)
+    const authContext = useContext(AuthContext)
+
+    const getNested = (obj, keys) => keys.reduce((p, c) => p && p.hasOwnProperty(c) ? p[c] : null, obj);
 
     const logoutHandler = event => {
         event.preventDefault()
-        auth.logout()
+        authContext.logout()
         history.push('/')
     }
-    if (auth.userRole === 'hr') {
-        return (
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="container">
-                    <a className="navbar-brand" href="/">РосАдапт</a>
-                    <button className="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
 
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav ml-auto">
-                            <li className="nav-item active">
-                                <NavLink to="/profile" className="nav-link">Профиль<span
-                                    className="sr-only">(current)</span></NavLink>
-                            </li>
+    return(
+        <nav>
+            <div className="container">
+                <div className="row">
 
-                            <li className="nav-item">
-                                <NavLink to="/create" className="nav-link">Создать</NavLink>
-                            </li>
-
-                            <li className="nav-item">
-                                <span className="nav-link disabled">{auth.userLogin}</span>
-                            </li>
-                            <li className="nav-item">
-                                <a href="/" className="nav-link" onClick={logoutHandler}>Выйти</a>
-                            </li>
-                        </ul>
+                    <div className="col-6">
+                        <img id="logo" src={LogoSVG} alt="Логотип"/>
                     </div>
-                </div>
-            </nav>
-        )
-    } else{
-        return (
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="container">
-                    <a className="navbar-brand" href="/">РосАдапт</a>
-                    <button className="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
 
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav ml-auto">
-                            <li className="nav-item active">
-                                <NavLink to="/profile" className="nav-link">Профиль<span
-                                    className="sr-only">(current)</span></NavLink>
-                            </li>
-
-                            <li className="nav-item">
-                                <span className="nav-link disabled">{auth.userLogin}</span>
-                            </li>
-                            <li className="nav-item">
-                                <a href="/" className="nav-link" onClick={logoutHandler}>Выйти</a>
-                            </li>
-                        </ul>
+                    <div className="col-6 text-right">
+                        <div className="profileBlock">
+                            <h1>
+                                <span id="profileFI">
+                                    {getNested(authContext.userData, ['name', 'lastName']) + ' ' + getNested(authContext.userData, ['name', 'firstName'])}
+                                    <h2 id="profileRole">{ roleRus }</h2>
+                                </span>
+                                <a href="/"onClick={logoutHandler}><img id="logoutBtn" src={LogoutSVG} alt="Выйти"/></a>
+                            </h1>
+                        </div>
                     </div>
+
                 </div>
-            </nav>
-        )
-    }
+            </div>
+        </nav>
+    )
 }

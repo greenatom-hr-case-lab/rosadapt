@@ -21,6 +21,9 @@ router.post(
                 case 'tyroall':
                     users = await User.find({ role }).sort({ "role": 1, "name.lastName": 1})
                     break
+                case 'headall':
+                    users = await User.find({ role }).sort({ "role": 1, "name.lastName": 1})
+                    break
                 case 'allall':
                     users = await User.find().sort({ "role": 1, "name.lastName": 1})
                     break

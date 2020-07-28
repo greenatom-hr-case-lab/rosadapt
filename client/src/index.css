@@ -83,39 +83,156 @@
     border: 1px solid #ced4da;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    border-radius: 0 0.25rem 0.25rem 0;
+    border-radius: 0.25rem 0 0 0.25rem;
 }
 .custom-select::after {
-    left:30;
+    left:30px;
+}
+
+
+
+.navbar{
+    margin-bottom: 5rem;
+}
+
+
+
+#tyroBlock #probationStart{
+    margin-right: 2rem;
 }
 
 .input-group-text{
     border-radius: 0.25rem 0 0 0.25rem;
 }
 
-.navbar{
-    margin-bottom: 5rem;
-}
-
-h3, h4{
-    color: #3c3c3c;
-}
-body{
-    font-family: 'Montserrat', sans-serif;
-}
-
-#tyroBlock #probationStart{
-    margin-right: 2rem;
-}
-
 .input-group-append{
-    width: 10rem;
-
+    width: 7rem;
 }
 .input-group-append .input-group-text{
     border-radius: 0 0.25rem 0.25rem 0;
+    cursor: pointer;
 }
 
 .listOfUsersForHr button{
     margin-right: 3rem;
 }
+
+#headId {
+    width: calc(100% - 10rem);
+}
+
+
+
+
+body{
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1{
+    font-size: 24px;
+}
+h2{
+    font-size: 18px;
+    font-weight: 400;
+}
+h3{
+    font-size: 14px;
+    font-weight: 400;
+}
+h3, h4 {
+    color: #3c3c3c;
+}
+nav{
+    margin: 50px
+}
+.btnBlue{
+    width: 150px;
+    height: 40px;
+
+    background: #4DA5F6;
+    border: none;
+    border-radius: 5px;
+
+    color: white;
+}
+.btnGreen{
+    width: 150px;
+    height: 40px;
+
+    background: #58C737;
+    border: none;
+    border-radius: 5px;
+
+    color: white;
+}
+/*profile*/
+#logo{
+    height: 40px;
+}
+#logoutBtn{
+    height: 18px;
+    margin-left: 20px;
+}
+#profileFI{
+    position: relative;
+}
+#profileRole{
+    position: absolute;
+    top: 100%;
+    right: 0;
+    color: #4A4A4A;
+}
+
+/*HR*/
+.flexCon{
+    padding: 100px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.flexCon a {
+    text-decoration: none;
+}
+.guideCard{
+    width: 270px;
+    height: 300px;
+    flex-wrap: wrap;
+    text-align: center;
+    border: 1px solid #ececec;
+    border-radius: 10px;
+    transition: 0.5s;
+}
+.guideCard:hover{
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.15);
+}
+.guideCard img{
+    width: 100px;
+    height: 100px;
+    margin: 85px;
+}
+.guideCard h3{
+    font-weight: 500;
+}
+.flexItem{
+
+}
+
+form {
+    text-align: center;
+    justify-items: center;
+}
+form h2{
+    line-height: 40px;
+    font-weight: 500;
+    color: black;
+}
+form #role, form #pos, form #dept{
+    color: #495057;
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+

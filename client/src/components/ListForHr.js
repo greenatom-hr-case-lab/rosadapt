@@ -11,6 +11,7 @@ export const ListForHr = () => {
     useEffect(() =>{
         message(error)
         clearError()
+        document.getElementById('showMyTyrosBtn').click()
     }, [error, message, clearError])
 
     function roleRus(role){
@@ -44,7 +45,6 @@ export const ListForHr = () => {
                     data = await request('/api/list/listUsers', 'POST', {role: 'all', sub: 'all'}, {
                         Authorization: `Bearer ${token}`
                     })
-                    console.log(data)
                     setUsers(data.users)
                     break
                 default:
@@ -64,6 +64,7 @@ export const ListForHr = () => {
             >
                 Мои стажёры
             </button>
+
             <button
                 className="btn btn-primary"
                 id="showAllTyrosBtn"

@@ -13,9 +13,9 @@ const schema = new Schema({
         type: Boolean,
         default: false
     },
-    headLink: { 
+    planLink: {
         type: Types.ObjectId, 
-        ref: 'User'
+        ref: 'Plan'
     },
     date:{
         dateStart: {

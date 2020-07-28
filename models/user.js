@@ -10,6 +10,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    activated: {
+        type: Boolean,
+        default: false
+    },
     name:{
         firstName: {
             type: String,
@@ -36,52 +40,15 @@ const schema = new Schema({
         type: String,
         required: true
     },
-    headLink: { 
-        type: Types.ObjectId, 
-        ref: 'User'
-    },
     hrLink: {
         type: Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
-    dates: {
-        dateB: Date,
-        dateStart: Date,
-        dateEnd: Date,
-        dateCreated: { 
-            type: Date,
-            default: Date.now
-        }
-    },
-    email: {
-        address:{
-            type: String,
-            unique: true
-        },
-        visAll: {
-            type: Boolean,
-            default: false
-        },
-        visSub: {
-            type: Boolean,
-            default: false
-        }
-    },
-    phone: {
-        number:{
-            type: Number,
-            unique: true
-        },
-        visAll: {
-            type: Boolean,
-            default: false
-        },
-        visSub: {
-            type: Boolean,
-            default: false
-        }
+    dateCreated: {
+        type: Date,
+        default: Date.now
     }
 })
 
 module.exports = model('User', schema)
-    

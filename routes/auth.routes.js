@@ -13,13 +13,11 @@ const router = Router()
 router.post(
     '/register',
     [
-        check('login','Некорректный логин').exists().isLength({ min: 2}),
-        check('password','Некорректный пароль').exists().isLength({ min: 4}),
-        check('firstName','Некорректное имя').exists().isLength({ min: 2}),
-        check('middleName','Некорректное отчество').exists().isLength({ min: 2}),
-        check('lastName','Некорректная фамилия').exists().isLength({ min: 2}),
-        check('dept','Некорректный отдел').exists().isLength({ min: 2}),
-        check('pos','Некорректная должность').exists().isLength({ min: 2})
+        check('firstName','Некорректное имя').exists(),
+        check('middleName','Некорректное отчество').exists(),
+        check('lastName','Некорректная фамилия').exists(),
+        check('dept','Некорректный отдел').exists(),
+        check('pos','Некорректная должность').exists()
     ], authMW,
     async (req, res) => {
     try {
@@ -33,8 +31,7 @@ router.post(
             })
         }
 
-        const {login, password, firstName, middleName, lastName, role, dept, pos, headId, probationStart, probationEnd} = req.body
-        console.log(probationEnd)
+        const {firstName, middleName, lastName, role, dept, pos} = req.body
 
         //код создания логина
         // function rus_to_latin ( str ) {
@@ -62,69 +59,44 @@ router.post(
         // }
         //var login = rus_to_latin(lastName).toLowerCase() + '.' + rus_to_latin(firstName)[0].toLowerCase() + '.' + rus_to_latin(middleName)[0].toLowerCase()
         //проверка существования логина
-        var candidate = await User.findOne({ login })
 
+        const users = await User.find()
+        let login = 'r' + (3400 + users.length)
+
+        const candidate = await User.findOne({ login })
         if (candidate) {
             return res.status(400).json({
                 errors: errors.array(),
                 message: 'Пользователь уже существует'
             })
         }
-        // if (candidate) {
-        //     User.find({
-        //         login
-        //     }).exec(function(err, users) {
-        //         if (err) throw err
-        //         login += '.' + (users.length + 1) ///////////////////////??????????????????? не работает
-        //     })
-        // }
+
         //создание пароля
-        // function randomString(i) {
-        //     var rnd = ''
-        //     while (rnd.length < i) 
-        //         rnd += Math.random().toString(36).substring(2)
-        //     return rnd.substring(0, i)
-        // }
-        // const password = randomString(4);
-
-        const hashedPassword = await bcrypt.hash(password, 12)
-        let user
-        if (role === 'tyro'){
-            user = new User({
-                login,
-                password: hashedPassword,
-                role,
-                dept,
-                pos,
-                name: {
-                    firstName: firstName,
-                    middleName: middleName,
-                    lastName: lastName
-                },
-                hrLink: req.user.userId,
-                headLink: '5f172d4a69ffe152f0ffafdf',
-                dates: {
-                    dateStart: probationStart,
-                    dateEnd: probationEnd
-                }
-            })
-        } else {
-            user = new User({
-                login,
-                password: hashedPassword,
-                role,
-                dept,
-                pos,
-                name: {
-                    firstName: firstName,
-                    middleName: middleName,
-                    lastName: lastName
-                },
-                hrLink: req.user.userId
-            })
+        function randomString(i) {
+            let rnd = ''
+            while (rnd.length < i)
+                rnd += Math.random().toString(36).substring(2)
+            return rnd.substring(0, i)
         }
-        await user.save()
+        const password = randomString(4);
 
+        const hashedPassword = password //await bcrypt.hash(password, 12)
+        //создание модели
+        const user = new User({
+            login,
+            password: hashedPassword,
+            role,
+            dept,
+            pos,
+            name: {
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName
+            },
+            hrLink: req.user.userId,
+        })
+        //await user.save()
+        console.log(user)
         await res.status(201).json({message: 'Профиль создан'})
 
     } catch (e) {
@@ -168,7 +140,7 @@ router.post(
             { userId: user.id
                     },
                     config.get('jwtSecret'),
-            { expiresIn: '1h'}
+            { expiresIn: '24h'}
         )
         await res.json({token, userId: user.id, userLogin: user.login, userRole: user.role, userData: user})
 
