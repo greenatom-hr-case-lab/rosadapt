@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import {NavLink, useHistory} from "react-router-dom"
 import {AuthContext} from "../../context/AuthContext"
-import listSVG from "../../img/list.svg"
+import listSVG from "../../img/showList.svg"
 import addUserSVG from "../../img/addUser.svg"
 import addPlanSVG from "../../img/addPlan.svg"
 

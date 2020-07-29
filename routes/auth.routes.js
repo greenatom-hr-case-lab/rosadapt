@@ -34,32 +34,6 @@ router.post(
         const {firstName, middleName, lastName, role, dept, pos} = req.body
 
         //код создания логина
-        // function rus_to_latin ( str ) {
-    
-        //     var ru = {
-        //         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 
-        //         'е': 'e', 'ё': 'e', 'ж': 'j', 'з': 'z', 'и': 'i', 
-        //         'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 
-        //         'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
-        //         'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 
-        //         'щ': 'shch', 'ы': 'y', 'э': 'e', 'ю': 'u', 'я': 'ya'
-        //     }, n_str = [];
-            
-        //     str = str.replace(/[ъь]+/g, '').replace(/й/g, 'i');
-            
-        //     for ( var i = 0; i < str.length; ++i ) {
-        //        n_str.push(
-        //               ru[ str[i] ]
-        //            || ru[ str[i].toLowerCase() ] == undefined && str[i]
-        //            || ru[ str[i].toLowerCase() ].replace(/^(.)/, function ( match ) { return match.toUpperCase() })
-        //        );
-        //     }
-            
-        //     return n_str.join('');
-        // }
-        //var login = rus_to_latin(lastName).toLowerCase() + '.' + rus_to_latin(firstName)[0].toLowerCase() + '.' + rus_to_latin(middleName)[0].toLowerCase()
-        //проверка существования логина
-
         const users = await User.find()
         let login = 'r' + (3400 + users.length)
 
@@ -80,11 +54,13 @@ router.post(
         }
         const password = randomString(4);
 
-        const hashedPassword = password //await bcrypt.hash(password, 12)
+        const hashedPassword = await bcrypt.hash(password, 12)
+
         //создание модели
         const user = new User({
             login,
             password: hashedPassword,
+            passwordFirst: password,
             role,
             dept,
             pos,
@@ -95,8 +71,7 @@ router.post(
             },
             hrLink: req.user.userId,
         })
-        //await user.save()
-        console.log(user)
+        await user.save()
         await res.status(201).json({message: 'Профиль создан'})
 
     } catch (e) {

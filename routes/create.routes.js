@@ -8,7 +8,7 @@ const Plan = require('../models/Plan')
 const router = Router()
 
 router.post(
-    '/listUsers', authMW,
+    '/createPlan', authMW,
     async (req, res) => {
         try {
             const users = await User.find( ).sort({ "role": 1, "name.lastName": 1})
@@ -20,7 +20,7 @@ router.post(
 )
 
 router.post(
-    '/planUser', authMW,
+    '/createTask', authMW,
     async (req, res) => {
         try {
             const plans = await Plan.find( )

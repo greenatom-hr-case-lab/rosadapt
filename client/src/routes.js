@@ -27,6 +27,10 @@ export const useRoutes = (isAuthenticated, userRole) => {
                             <HrPage />
                         </Route>
 
+                        <Route path="/showList" exact>
+                            <HrShowPage />
+                        </Route>
+
                         <Route path="/createUser" exact>
                             <CreateUserPage />
                         </Route>
@@ -34,11 +38,7 @@ export const useRoutes = (isAuthenticated, userRole) => {
                         <Route path="/createPlan" exact>
                             <CreatePlanPage />
                         </Route>
-
-                        <Route path="/showList" exact>
-                            <HrShowPage />
-                        </Route>
-                        <Redirect to="/createUser" />
+                        <Redirect to="/showList" />
                     </Switch>
                 )
             case 'head':

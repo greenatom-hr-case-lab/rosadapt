@@ -10,6 +10,10 @@ const schema = new Schema({
         type: String,
         required: true
     },
+    passwordFirst: {
+      type: String,
+      required: true
+    },
     activated: {
         type: Boolean,
         default: false
@@ -45,6 +49,7 @@ const schema = new Schema({
         ref: 'User',
         required: true
     },
+    planLink: String,
     dateCreated: {
         type: Date,
         default: Date.now
