@@ -38,7 +38,7 @@ export const useRoutes = (isAuthenticated, userRole) => {
                         <Route path="/createPlan" exact>
                             <CreatePlanPage />
                         </Route>
-                        <Redirect to="/showList" />
+                        <Redirect to="/main" />
                     </Switch>
                 )
             case 'head':

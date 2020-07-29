@@ -16,7 +16,7 @@ const schema = new Schema({
     },
     activated: {
         type: Boolean,
-        default: false
+        default: true
     },
     name:{
         firstName: {
@@ -49,7 +49,11 @@ const schema = new Schema({
         ref: 'User',
         required: true
     },
-    planLink: String,
+    planLink: {
+        type: Types.ObjectId,
+        ref: 'Plan',
+        default: null
+    },
     dateCreated: {
         type: Date,
         default: Date.now

@@ -4,13 +4,14 @@ import {NavLink} from "react-router-dom";
 import {useMessage} from "../../hooks/message.hook";
 import {useHttp} from "../../hooks/http.hook";
 import {roleRus} from "../../functions/roleRus";
+import logoOfPageSVG from "../../img/showList.svg"
 
 
 
 export const HrShowPage = () => {
     const auth = useContext(AuthContext)
     const message = useMessage()
-    const {loading, request, error, clearError} = useHttp()
+    const {request, error, clearError} = useHttp()
     const [users, setUsers] = useState([])
     const [plans, setPlans] = useState([])
     const [activatedUsers, setActivatedUsers] = useState([])
@@ -19,7 +20,7 @@ export const HrShowPage = () => {
     useEffect(() =>{
         message(error)
         clearError()
-        getListOfHeads()
+        getListOfUsers()
         getPlanOf()
         window.M.updateTextFields()
 
@@ -67,18 +68,17 @@ export const HrShowPage = () => {
         return arrNeed
     }
 
-    const getListOfHeads = async () => {
+    const getListOfUsers = async () => {
         try {
             const data = await request('/api/list/listUsers', 'POST', [], {
                 Authorization: `Bearer ${auth.token}`
             })
             message(data.message)
-            setActivatedUsers(filterUsers(data.users, false, 'all', 'all'))
+            setActivatedUsers(filterUsers(data.users, true, 'all', 'all'))
             setNonActivatedUsers(filterUsers(data.users,false, 'all', 'own'))
-            setUsers(filterUsers(data.users, false, 'tyro', 'own'))
+            setUsers(filterUsers(data.users, true, 'tyro', 'own'))
         } catch (e) {}
     }
-
     const getPlanOf = async () => {
         try {
             const data = await request('/api/list/planUser', 'POST', [], {
@@ -97,13 +97,13 @@ export const HrShowPage = () => {
 
         switch (event.target.innerHTML) {
             case 'Мои стажёры':
-                setUsers(filterUsers(activatedUsers, false, 'tyro', 'own'))
+                setUsers(filterUsers(activatedUsers, true, 'tyro', 'own'))
                 break
             case 'Все стажёры':
-                setUsers(filterUsers(activatedUsers, false, 'tyro', 'all'))
+                setUsers(filterUsers(activatedUsers, true, 'tyro', 'all'))
                 break
             case 'Все пользователи':
-                setUsers(filterUsers(activatedUsers, false, 'all', 'all'))
+                setUsers(filterUsers(activatedUsers, true, 'all', 'all'))
                 break
             default:break
         }
@@ -111,6 +111,7 @@ export const HrShowPage = () => {
 
     return(
         <main className="container">
+            <img className="logoOfPage" src={ logoOfPageSVG } alt="лого страницы"/>
             <div className="flexCon">
                 <div className="flexItem">
                     <NavLink to="/main">
@@ -173,17 +174,48 @@ export const HrShowPage = () => {
                     <button onClick={ purpleSwitch } className="btnPurple">Все пользователи</button>
                 </div></div></div>
                 { users.map((user, index) => {
-                    let plan = plans.find(plan => plan.tyroLink === user._id);
+                    let plan = plans.find(plan => plan.tyroLink === user._id)
+                    let head
+                    if (!!plan) head = activatedUsers.find((item) => item._id === plan.headLink)
+                    console.log(head)
+
+                    const classNameForUserCard = () => {
+                        if (!!plan || user.role !== "tyro") return "userCard"
+                        return "userCard tyroWithoutPlan"
+                    }
+                    const statusOfPlan = () => {
+                        switch (plan.level) {
+                            case 1: return "Заполнение сотрудником"
+                            case 2: return "Согласование руководителем"
+                            case 3: return "Выполнение"
+                            case 4: return "Оценка руководителем"
+                            case 5: return "Оценка завершена"
+                            default:return "none"
+                        }
+                    }
+
+                    const datePeriodFormat = () => {
+                        const dateStart = new Date(plan.date.dateStart)
+                        const dateEnd   = new Date(plan.date.dateEnd)
+                        let arr = [dateStart.getDate(), dateStart.getMonth()+1,dateEnd.getDate(),dateEnd.getMonth()+1]
+                        arr.forEach(function(item,i) {
+                            if (item < 10){
+                                arr[i] = '0' + item
+                            }
+                        })
+                        return arr[0] + '.' + arr[1] + ' – ' + arr[2] + '.' + arr[3]
+                    }
+
                     return (
                         <div className="offset-2 col-10 userCardBlock" key={user._id}>
                             <div className="row">
                                 <div className="col-10">
-                                    <div className="userCard" onClick={ clickUserCard }>
+                                    <div className={ classNameForUserCard() } onClick={ clickUserCard }>
                                         <div className="userCardHead">
                                             <div className="row">
                                                 <h2 className="col-8">{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</h2>
                                                 <h2 className="col-2 text-center">{roleRus(user.role)}</h2>
-                                                <h2 className="col-2 text-right">{user.login}</h2>
+                                                <h2 className="col-2 text-right text-black-50">{user.login}</h2>
                                             </div>
                                         </div>
                                         <div className="userCardBody d-none">
@@ -191,10 +223,28 @@ export const HrShowPage = () => {
                                                 <div className="col-8">
                                                     <h2>{user.dept}</h2>
                                                     <h2>{user.pos}</h2>
-                                                    <button className="btnBlue">Открыть план адаптации</button>
+                                                    {!!plan && user.role === "tyro" &&
+                                                    <>
+                                                        <h2>Руководитель {head.name.lastName + ' ' + head.name.firstName + ' ' + head.name.middleName}</h2>
+                                                        <button className="btnBlue">Открыть план адаптации</button>
+                                                    </>
+                                                    }
+                                                    {!plan && user.role === "tyro" &&
+                                                        <button className="btnOrange">Создать план адаптации</button>
+                                                    }
                                                 </div>
-                                                <div className="col-2 text-center">25.08 – 25.10{!!plan && plan.date.dateStart.getMonth() + " - " + plan.date.dateEnd.getMonth()}</div>
-                                                <div className="col-2 text-right">36%</div>
+                                                <div className="col-2 text-center">
+                                                    {!!plan && user.role === "tyro" &&
+                                                    <>
+                                                        <h2>{ datePeriodFormat() }</h2>
+                                                        <h2>{ statusOfPlan() }</h2>
+                                                    </>
+                                                    }
+
+                                                </div>
+                                                <div className="col-2 text-right">
+                                                    <h2>{ /*percentOfPlan(plan)*/ }</h2>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -3,6 +3,7 @@ import {NavLink, useHistory} from "react-router-dom";
 import {AuthContext} from "../../context/AuthContext"
 import {useMessage} from "../../hooks/message.hook";
 import {useHttp} from "../../hooks/http.hook";
+import logoOfPageSVG from "../../img/addUser.svg";
 
 export const CreateUserPage = () => {
     const history = useHistory()
@@ -35,6 +36,8 @@ export const CreateUserPage = () => {
 
     return(
         <main className="container">
+            <img className="logoOfPage" src={ logoOfPageSVG } alt="лого страницы"/>
+
             <div className="flexCon">
 
                 <div className="flexItem">

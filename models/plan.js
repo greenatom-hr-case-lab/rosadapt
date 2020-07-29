@@ -23,6 +23,14 @@ const schema = new Schema({
         type: Number,
         default: 1
     },
+    countsOfDoneTasks: {
+        type: Number,
+        default: 0
+    },
+    countsOfAllTasks: {
+        type: Number,
+        default: 0
+    },
     date:{
         dateStart: {
             type: Date,
@@ -32,9 +40,7 @@ const schema = new Schema({
             type: Date,
             required: true
         },
-        dateFinished: {
-            type: Date
-        },
+        dateFinished: Date,
         created: {
             type: Date,
             default: Date.now

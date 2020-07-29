@@ -11,7 +11,7 @@ router.post(
     '/listUsers', authMW,
     async (req, res) => {
         try {
-            const users = await User.find( ).sort({ "role": 1, "name.lastName": 1})
+            const users = await User.find( ).sort({ "planLink": 1, "role": 1, "name.lastName": 1})
             await res.json({users})
         } catch (e) {
             await res.status(500).json({message: 'Не удалось получить список пользователей'})

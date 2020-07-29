@@ -4,7 +4,6 @@
         bottom: 0%;
     }
 }
-
 @media only screen and (min-width: 601px) and (max-width: 992px) {
     #toast-container {
         left: 5%;
@@ -12,7 +11,6 @@
         max-width: 90%;
     }
 }
-
 @media only screen and (min-width: 993px) {
     #toast-container {
         top: 10%;
@@ -20,7 +18,6 @@
         max-width: 86%;
     }
 }
-
 .toast {
     border-radius: 8px;
     top: 20px;
@@ -50,25 +47,21 @@
     justify-content: space-between;
     cursor: default;
 }
-
 .toast .toast-action {
     color: #eeff41;
     font-weight: 500;
     margin-right: -25px;
     margin-left: 3rem;
 }
-
 .toast.rounded {
     border-radius: 24px;
 }
-
 @media only screen and (max-width: 600px) {
     .toast {
         width: 100%;
         border-radius: 0;
     }
 }
-
 #toast-container {
     display: block;
     position: fixed;
@@ -89,24 +82,19 @@
     left:30px;
 }
 
-
-
 .navbar{
     margin-bottom: 5rem;
 }
 
 
 
-#tyroBlock #probationStart{
-    margin-right: 2rem;
-}
-
 .input-group-text{
     border-radius: 0.25rem 0 0 0.25rem;
+    width: auto;
 }
 
 .input-group-append{
-    width: 7rem;
+    width: 10rem;
 }
 .input-group-append .input-group-text{
     border-radius: 0 0.25rem 0.25rem 0;
@@ -123,11 +111,13 @@
 
 
 
-
+html {
+    overflow-x: hidden;
+    margin-right: calc(-1 * (100vw - 100%));
+}
 body{
     font-family: 'Montserrat', sans-serif;
 }
-
 h1{
     font-size: 24px;
 }
@@ -144,6 +134,7 @@ nav{
 }
 main{
     margin-bottom: 300px;
+    position: relative;
 }
 button:active, button:focus {
     outline: none;
@@ -179,12 +170,24 @@ button::-moz-focus-inner {
     color: white;
 }
 .btnGreen{
+     min-width: 150px;
+     height: 40px;
+     padding-left: 13px;
+     padding-right: 13px;
+
+     background: #58C737;
+     border: none;
+     border-radius: 5px;
+
+     color: white;
+ }
+.btnOrange{
     min-width: 150px;
     height: 40px;
     padding-left: 13px;
     padding-right: 13px;
 
-    background: #58C737;
+    background: #F68A4D;
     border: none;
     border-radius: 5px;
 
@@ -233,7 +236,7 @@ button::-moz-focus-inner {
     color: #4A4A4A;
 }
 
-/*HR*/
+/*HR*//*main page*/
 .flexCon{
     padding: 100px;
     display: flex;
@@ -265,6 +268,15 @@ button::-moz-focus-inner {
     font-weight: 500;
 }
 
+.logoOfPage {
+    position: absolute;
+    height: 500px;
+    top: -350px;
+    left: 50%;
+    transform: translateX(-50%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0,0) 90%);
+}
+/*HR*//*create user and plan*/
 form {
     text-align: center;
     justify-items: center;
@@ -274,7 +286,7 @@ form {
     font-weight: 500;
     color: black;
 }
-form #role, form #pos, form #dept{
+form .custom-select{
     color: #495057;
     position: relative;
     flex: 1 1 auto;
@@ -283,10 +295,11 @@ form #role, form #pos, form #dept{
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
-
-.listOfNotActivated{
-    margin-bottom: 20px;
+form #probationStart{
+    margin-right: 2rem;
 }
+
+/*HR*//*show users*/
 .listOfNotActivated h1{
     margin-bottom: 20px;
 }
@@ -330,10 +343,7 @@ form #role, form #pos, form #dept{
 }
 .userCardBody button{
     margin-left: 0 !important;
-    margin-bottom: 15px;
+    margin-bottom: 0px !important;
 }
-
-.listOfActivated{
-    margin-top: 80px;
-}
-.buttonSwitch{margin-bottom: 55px}
+.buttonSwitch{margin-bottom: 55px; margin-top: 55px}
+.tyroWithoutPlan{background: rgba(246, 138, 77, 0.11);}
