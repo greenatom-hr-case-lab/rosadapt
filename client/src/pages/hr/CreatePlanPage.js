@@ -4,7 +4,7 @@ import {AuthContext} from "../../context/AuthContext"
 import {useMessage} from "../../hooks/message.hook";
 import {useHttp} from "../../hooks/http.hook";
 
-export const CreateUserPage = () => {
+export const CreatePlanPage = () => {
     const history = useHistory()
     const auth = useContext(AuthContext)
     const message = useMessage()
