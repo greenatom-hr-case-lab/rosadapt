@@ -148,7 +148,7 @@ export const HrShowPage = () => {
                                             <div className="row">
                                                 <div className="col-8">
                                                     <h2>{user.dept}</h2>
-                                                    <h3>{user.pos}</h3>
+                                                    <h2>{user.pos}</h2>
                                                 </div>
                                                 <div className="col-2 text-center"> </div>
                                                 <div className="col-2 text-right">••••••••••</div>
