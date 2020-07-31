@@ -106,10 +106,11 @@ export const CreateUserPage = () => {
                                     onChange = { changeHandler }>
 
                                 <option defaultValue="none"></option>
-                                <option defaultValue="Космические войска" value="Космические войска">Космические войска</option>
+                                <option defaultValue="Космические войска" value="Космические войска">Космическое материаловедение</option>
                                 <option value="Отдел создания ядер">Отдел создания ядер</option>
                                 <option value="Атомная топография">Атомная топография</option>
                                 <option value="Отдел кадров">Отдел кадров</option>
+                                <option value="Отдел кадров">Разработка новых материалов</option>
                             </select>
                             <div className="input-group-append">
                                 <label htmlFor="dept" className="input-group-text">Отдел</label>
@@ -124,6 +125,8 @@ export const CreateUserPage = () => {
                                 <option defaultValue="none"></option>
                                 <option defaultValue="Младший научный сотрудник">Младший научный сотрудник</option>
                                 <option value="Старший научный сотрудник">Старший научный сотрудник</option>
+                                <option value="Заведущий отделением">Заведущий отделением</option>
+                                <option value="Администратор">Администратор</option>
                                 <option value="Мастер">Разработчик ПО</option>
                                 <option value="Старший сотрудник">Старший сотрудник</option>
                             </select>
