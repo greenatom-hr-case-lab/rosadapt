@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {useMessage} from '../hooks/message.hook'
 import {AuthContext} from '../context/AuthContext'
+import LogoSVG from "../img/logo.svg";
 
 export const AuthPage = () => {
     const auth = useContext(AuthContext)
@@ -17,6 +18,12 @@ export const AuthPage = () => {
     }, [error, message, clearError])
 
     useEffect( () => {
+        setTimeout(()=>{
+            document.getElementById('logoOnAuth').style.opacity = "1"
+            setTimeout(()=>{
+                document.getElementsByClassName('card')[0].style.opacity = "1"
+            },250)
+        }, 500)
         window.M.updateTextFields()
     }, [])
 
@@ -41,20 +48,12 @@ export const AuthPage = () => {
     }
 
     return(
-        <div className="row">
-            <div className="col-md-6 offset-md-3">
-                <br/>
-                <br/>
-                <br/>
-                <h1 className="text-center">РОСАТОМ</h1>
-                <br/>
-                <br/>
+        <div className="row justify-content-md-center">
+            <div className="col-md-auto">
+                <img id="logoOnAuth" src={LogoSVG} alt="Логотип"/>
+
                 <div className="card">
-                    <div className="card-body">
-                        <h5 className="card-title">Импровизируй. Адаптируйся. Выживай.</h5>
-                        <p className="card-text">Добро пожаловать в программу адаптации сотрудника в Росатоме.</p>
-                        <br/>
-                        <br/>
+                    <div className="card-body text-center">
                         <div className="input-group mb-3">
                             <input type="text"
                                    name="login"
@@ -78,11 +77,11 @@ export const AuthPage = () => {
                         </div>
 
                         <button
-                           className="btn btn-primary mr-3"
+                           className="btn btnGreen"
                            onClick = { loginHandler }
                            disabled={loading}
                         >
-                            Авторизоваться
+                            Войти
                         </button>
 
                     </div>

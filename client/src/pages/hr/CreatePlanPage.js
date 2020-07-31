@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {NavLink, useHistory} from "react-router-dom";
+import {NavLink, useHistory, useParams} from "react-router-dom";
 import {AuthContext} from "../../context/AuthContext"
 import {useMessage} from "../../hooks/message.hook";
 import {useHttp} from "../../hooks/http.hook";
@@ -12,6 +12,7 @@ export const CreatePlanPage = () => {
     const {loading, request, error, clearError} = useHttp()
     const [allActivatedTyros, setActivatedUsers] = useState([])
     const [allActivatedHeads, setActivatedHeads] = useState([])
+    const tyroIdURL = useParams().id
 
     const dateNow = () => {
         const date = new Date()
@@ -41,6 +42,7 @@ export const CreatePlanPage = () => {
         message(error)
         clearError()
         getListOfUsers()
+        if (tyroIdURL) setForm({...form, tyroLink: tyroIdURL})
         window.M.updateTextFields()
     }, [error, message, clearError])
 
@@ -103,9 +105,16 @@ export const CreatePlanPage = () => {
             <div className="flexCon">
 
                 <div className="flexItem">
-                    <NavLink to="/main">
-                        <button className="btnBlue">Назад</button>
-                    </NavLink>
+                    {tyroIdURL &&
+                        <NavLink to="/showList">
+                            <button className="btnBlue">Назад</button>
+                        </NavLink>
+                    }
+                    {!tyroIdURL &&
+                        <NavLink to="/main">
+                            <button className="btnBlue">Назад</button>
+                        </NavLink>
+                    }
                 </div>
 
                 <div className="flexItem">
@@ -114,22 +123,38 @@ export const CreatePlanPage = () => {
                         <br/>
 
                         <div className="input-group mb-3">
-                            <select className="custom-select"
-                                    id="tyroLink"
-                                    name="tyroLink"
-                                    onChange = { changeHandler }>
+                            {tyroIdURL &&
+                                <select className="custom-select" style={{appearance: "none", WebkitAppearance: "none", pointerEvents: "none"}}
+                                        id="tyroLink"
+                                        name="tyroLink"
+                                        onChange = { changeHandler }>
+                                    { allActivatedTyros.map((user, index) => {
+                                        if (user._id === tyroIdURL){
+                                            return (
+                                                <option key={user._id} defaultValue={user._id}>{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</option>
+                                            )
+                                        }
+                                    }) }
+                                </select>
+                            }
+                            {!tyroIdURL &&
+                                <select className="custom-select"
+                                        id="tyroLink"
+                                        name="tyroLink"
+                                        onChange = { changeHandler }>
 
-                                <option defaultValue="none"> </option>
-                                { allActivatedTyros.map((user, index) => {
-                                    if (user.planLink === null){
-                                        return (
-                                            <option key={user._id} value={user._id}>{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</option>
-                                        )
-                                    }
-                                }) }
-                            </select>
+                                    <option defaultValue="none"> </option>
+                                    { allActivatedTyros.map((user, index) => {
+                                        if (user.planLink === null){
+                                            return (
+                                                <option key={user._id} value={user._id}>{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</option>
+                                            )
+                                        }
+                                    }) }
+                                </select>
+                            }
                             <div className="input-group-append">
-                                <label htmlFor="dept" className="input-group-text">Стажёр</label>
+                                <label htmlFor="tyroLink" className="input-group-text">Стажёр</label>
                             </div>
                         </div>
 
@@ -147,7 +172,7 @@ export const CreatePlanPage = () => {
                                 }) }
                             </select>
                             <div className="input-group-append">
-                                <label htmlFor="pos" className="input-group-text">Руководитель</label>
+                                <label htmlFor="headLink" className="input-group-text">Руководитель</label>
                             </div>
                         </div>
 

@@ -39,6 +39,13 @@ export const useRoutes = (isAuthenticated, userRole) => {
                         <Route path="/createPlan" exact>
                             <CreatePlanPage />
                         </Route>
+
+                        <Route path="/createPlan/:id" exact>
+                            <CreatePlanPage />
+                        </Route>
+                        <Route path="/plan/:id" exact>
+                            <PlanPage />
+                        </Route>
                         <Redirect to="/main" />
                     </Switch>
                 )

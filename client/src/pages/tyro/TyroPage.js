@@ -9,6 +9,7 @@ import {Loader} from "../../components/Loader";
 import {NavLink} from "react-router-dom";
 import {statusOfPlanRus} from "../../functions/statusOfPlanRus";
 import {descriptionOfMark} from "../../functions/descriptionOfMark";
+import {TaskCard} from "../../components/TaskCard";
 
 export const TyroPage = () => {
     const auth = useContext(AuthContext)
@@ -60,6 +61,7 @@ export const TyroPage = () => {
         }
     }
 
+    let flagForProgress = true
     const getPlanAndTasks = useCallback(async () => {
         try {
             const data = await request (`/api/list/plan/${auth.userId}`, 'GET', null, {
@@ -75,6 +77,14 @@ export const TyroPage = () => {
                 setNonDoneActualTasks(filterTasks(data.tasks,false,true))
                 setNonDoneFutureTasks(filterTasks(data.tasks,false,false))
                 setFormTask({...formTask, planLink: data.plan._id})
+                changeBar(100)
+                console.log(data.plan.level)
+                setTimeout(()=>{
+                        if (data.plan.countsOfAllTasks > 0) changeBar(data.plan.countsOfDoneTasks/data.plan.countsOfAllTasks*100)
+                        if (data.plan.level === 5) changeBar(100, plan.mark)
+                    }
+                ,10)
+
             }
 
         }
@@ -86,19 +96,30 @@ export const TyroPage = () => {
     }
 
     const changeHandlerAddTask = event => {
-        setFormTask({ ...formTask, [event.target.name]: event.target.value })
+        if (event.target.name === 'dateStart') {
+            document.getElementById('dateEnd').value = datePlus(event.target.value, 1)
+            setFormTask({...formTask, dateStart: document.getElementById('dateStart').value, dateEnd: document.getElementById('dateEnd').value})
+        } else {
+            setFormTask({ ...formTask, [event.target.name]: event.target.value })
+        }
+        console.log({...formTask})
     }
-    const addHandlerTask = async () => {
-        try {
-            const data = await request('/api/create/task', "POST", {...formTask}, {
-                Authorization: `Bearer ${auth.token}`
-            })
-            message(data.message)
-            setFormTask({ ...formTask, name: undefined })
-            setFormTask({ ...formTask, description: undefined })
-            getPlanAndTasks()
-        } catch (e) {}
-    }
+    const addHandlerTask = useCallback(
+        async () => {
+            console.log({...formTask})
+            try {
+                console.log({...formTask})
+                const data = await request('/api/create/task', "POST", {...formTask}, {
+                    Authorization: `Bearer ${auth.token}`
+                })
+                message(data.message)
+                setFormTask({ ...formTask, name: undefined })
+                setFormTask({ ...formTask, description: undefined })
+                getPlanAndTasks()
+            } catch (e) {}
+        }
+        ,[request])
+
     const deleteHandlerTask = async (event) => {
         try{
             const data = await request (`/api/delete/task/${event.target.name}`, 'GET', null, {
@@ -151,21 +172,71 @@ export const TyroPage = () => {
         } catch (e) {}
     }
 
-    if (loading) {
-        return <Loader/>
+    // if (loading) {
+    //     return <Loader/>
+    // }
+
+    const changeBar = (percent, mark) => {
+        console.log(percent, mark)
+        if (mark) {
+            document.getElementById('cont').setAttribute('data-pct', mark)
+            return
+        }
+        let val = parseInt(percent)
+
+        let circle = document.querySelector('#bar')
+        if (isNaN(val)) {
+            val = 100
+        } else {
+
+            let r = circle.getAttribute('r')
+            let c = Math.PI*(r*2)
+
+            if (val < 0) { val = 0 }
+            if (val > 100) { val = 100 }
+            let pct = ((100-val)/100)*c
+            circle.style.strokeDashoffset = pct
+            document.getElementById('cont').setAttribute('data-pct', val);
+        }
     }
 
+
     return (
-        <>
-            {!loading && plan &&
+        <>  { plan && plan.level === 5 &&
+                <div className="progressCircleBlock">
+                    <div id="cont" className="done" data-pct="100">
+                        <svg id="svg" width="128" height="128" viewport="0 0 100 100" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <circle          r="60" cx="64" cy="64" fill="transparent" strokeDasharray="376.99111843077515"
+                                             strokeDashoffset="0"/>
+                            <circle id="barr" r="60" cx="64" cy="64" fill="transparent"
+                                    strokeDasharray="376.99111843077515" strokeDashoffset="0"/>
+                        </svg>
+                    </div>
+                </div>
+            }
+            {(!plan || (plan && plan.level !== 5)) &&
+                <div className="progressCircleBlock">
+                    <div id="cont" data-pct="100">
+                        <svg id="svg" width="128" height="128" viewport="0 0 100 100" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <circle          r="60" cx="64" cy="64" fill="transparent" strokeDasharray="376.99111843077515"
+                                             strokeDashoffset="0"/>
+                            <circle id="bar" r="60" cx="64" cy="64" fill="transparent"
+                                    strokeDasharray="376.99111843077515" strokeDashoffset="0"/>
+                        </svg>
+                    </div>
+                </div>
+            }
             <main className="container tyroPage">
-                { plan.level === undefined && <main className="container tyroPage">
+                {loading && <Loader/>}
+            {!loading && plan && <>
+                { plan.level === undefined &&
                     <div className="flexCon">
                         <div className="flexItem">
                             <h2>Ваш план адаптации пока что не был создан, но скоро он здесь появится</h2>
                         </div>
-                    </div>
-                </main>}
+                    </div>}
                 { plan.level === 1 && <>
                     <div className="flexCon flexConForTyro">
                         <div className="flexItem invisible">
@@ -215,7 +286,7 @@ export const TyroPage = () => {
                             </div>
                             <div className="input-group mb-3">
                                 <input type="date" id="dateEnd" name="dateEnd" className="form-control"
-                                       max="2099-12-12"
+                                       max="2099-12-12" min={ dateNow() }
                                        placeholder="дата окончания"
                                        defaultValue={ datePlus(dateNow(), 1) }
                                        onChange = { changeHandlerAddTask }
@@ -234,21 +305,7 @@ export const TyroPage = () => {
                                         <div className="offset-2 col-10 taskCardBlock" key={i}>
                                             <div className="row">
                                                 <div className="col-10">
-                                                    <div className="taskCard" onClick={ clickTaskCard }>
-                                                        <div className="taskCardHead">
-                                                            <div className="row">
-                                                                <h2 className="col-10">{task.name}</h2>
-                                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                            </div>
-                                                        </div>
-                                                        <div className="taskCardBody d-none">
-                                                            <div className="row">
-                                                                <div className="col-10 font-weight-light">
-                                                                    <h2 className="font-weight-light">{task.description}</h2>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                 </div>
                                                 <div className="col-2 text-center buttonSection d-none">
                                                     <button className="btnBlue">Изменить</button>
@@ -269,13 +326,11 @@ export const TyroPage = () => {
                             <h2>Ваш план адаптации проходит проверку у руководителя</h2>
                         </div>
                     </div>
-
-
                 </>}
-                { (plan.level === 3 || plan.level === 4) && <>
+                { (plan.level === 3 || plan.level === 4) &&<>
                     <div className="flexCon flexConForTyro">
-                    </div>
 
+                    </div>
                     <>
                         { nonDoneActualTasks.length !== 0 &&
                             <div className="row listOfActualTasks">
@@ -286,21 +341,7 @@ export const TyroPage = () => {
                                             <div className="offset-2 col-10 taskCardBlock" key={task._id}>
                                                 <div className="row">
                                                     <div className="col-10">
-                                                        <div className="taskCard" onClick={ clickTaskCard }>
-                                                            <div className="taskCardHead">
-                                                                <div className="row">
-                                                                    <h2 className="col-10">{task.name}</h2>
-                                                                    <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                </div>
-                                                            </div>
-                                                            <div className="taskCardBody d-none">
-                                                                <div className="row">
-                                                                    <div className="col-10 font-weight-light">
-                                                                        <h2 className="font-weight-light">{task.description}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                     </div>
                                                     <div className="col-2 text-center buttonSection d-none">
                                                         <button className="btnBlue" onClick={ doneHandlerTask } name={task._id}>Завершить</button>
@@ -321,21 +362,7 @@ export const TyroPage = () => {
                                             <div className="offset-2 col-10 taskCardBlock"  key={task._id}>
                                                 <div className="row">
                                                     <div className="col-10">
-                                                        <div className="taskCard" onClick={ clickTaskCard }>
-                                                            <div className="taskCardHead">
-                                                                <div className="row">
-                                                                    <h2 className="col-10">{task.name}</h2>
-                                                                    <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                </div>
-                                                            </div>
-                                                            <div className="taskCardBody d-none">
-                                                                <div className="row">
-                                                                    <div className="col-10 font-weight-light">
-                                                                        <h2 className="font-weight-light">{task.description}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                     </div>
                                                     <div className="col-2 text-center buttonSection d-none">
                                                         <button className="btnBlue" onClick={ doneHandlerTask } name={task._id}>Завершить</button>
@@ -356,21 +383,7 @@ export const TyroPage = () => {
                                         <div className="offset-2 col-10 taskCardBlock"  key={task._id}>
                                             <div className="row">
                                                 <div className="col-10">
-                                                    <div className="taskCard" onClick={ clickTaskCard }>
-                                                        <div className="taskCardHead">
-                                                            <div className="row">
-                                                                <h2 className="col-10">{task.name}</h2>
-                                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                            </div>
-                                                        </div>
-                                                        <div className="taskCardBody d-none">
-                                                            <div className="row">
-                                                                <div className="col-10 font-weight-light">
-                                                                    <h2 className="font-weight-light">{task.description}</h2>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                 </div>
                                                 <div className="col-2 text-center buttonSection d-none">
                                                     <button className="btnRed" name={task._id} onClick={ unDoneHandlerTask }>Вернуть</button>
@@ -404,21 +417,7 @@ export const TyroPage = () => {
                                     <div className="offset-2 col-10 taskCardBlock"  key={task._id}>
                                         <div className="row">
                                             <div className="col-10">
-                                                <div className="taskCard" onClick={ clickTaskCard }>
-                                                    <div className="taskCardHead">
-                                                        <div className="row">
-                                                            <h2 className="col-10">{task.name}</h2>
-                                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                        </div>
-                                                    </div>
-                                                    <div className="taskCardBody d-none">
-                                                        <div className="row">
-                                                            <div className="col-10 font-weight-light">
-                                                                <h2 className="font-weight-light">{task.description}</h2>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                             </div>
                                         </div>
                                     </div>
@@ -429,639 +428,7 @@ export const TyroPage = () => {
                     }
                 </>}
 
-                {/*<div className="row headOfPlanPage">*/}
-
-                {/*    <div className="col-2">*/}
-                {/*        {userRole === 'hr' && <NavLink to="/showList">*/}
-                {/*            <button className="btnBlue">назад</button>*/}
-                {/*        </NavLink>}*/}
-                {/*        {userRole === 'head' && <NavLink to="/main">*/}
-                {/*            <button className="btnBlue">назад</button>*/}
-                {/*        </NavLink>}*/}
-                {/*    </div>*/}
-                {/*    <h1 className="col-10">Стажёр {tyro.name.lastName + ' ' + tyro.name.firstName + ' ' + tyro.name.middleName}</h1>*/}
-
-                {/*    <h2 className="offset-2 col-10">Отдел: {tyro.dept}</h2>*/}
-                {/*    <h2 className="offset-2 col-10">Должность: {tyro.pos}</h2>*/}
-                {/*    <h2 className="offset-2 col-10">Статус плана атестации: {statusOfPlanRus(plan).toLowerCase()}</h2>*/}
-                {/*    { userRole === 'hr' && <h2 className="offset-2 col-10">Руководитель: {head.name.lastName + ' ' + head.name.firstName + ' ' + head.name.middleName }</h2>}*/}
-                {/*    <h2 className="offset-2 col-10">Период адаптации: с {dateFormToWords(plan.date.dateStart)} по {dateFormToWords(plan.date.dateEnd)}</h2>*/}
-                {/*    <h2 className="offset-2 col-10">Дата создания плана: {dateFormToWords(plan.date.created)}</h2>*/}
-                {/*    { plan.level === 5 && <h2 className="offset-2 col-10">{plan.summary}</h2>}*/}
-                {/*</div>*/}
-                {/*<div className="row bodyOfPlanPage">*/}
-                {/*    { (plan.level === 1 || plan.level === 2) &&*/}
-                {/*    <div className="row listOfAllTasks">*/}
-                {/*        { tasks.length === 0 && <h1  className="offset-2 col-10">Задачи пока что не были добавлены</h1>}*/}
-                {/*        { tasks.length !== 0 && <>*/}
-                {/*            <h1  className="offset-2 col-8">Список предстоящих задач</h1>*/}
-                {/*            { plan.level === 2 &&*/}
-                {/*            <div className="col-2">*/}
-                {/*                <button className="btnOrange" onClick={ () => {} }>подтвердить</button>*/}
-                {/*            </div>*/}
-                {/*            }*/}
-                {/*            {*/}
-                {/*                tasks.map( (task) => {*/}
-                {/*                    return (*/}
-                {/*                        <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <div className="col-10">*/}
-                {/*                                    <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                        <div className="taskCardHead">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                        <div className="taskCardBody d-none">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <div className="col-10 font-weight-light">*/}
-                {/*                                                    <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                                </div>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                                <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                                    <button className="btnBlue">Изменить</button>*/}
-                {/*                                    <button className="btnRed">Удалить</button>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    )*/}
-                {/*                })*/}
-                {/*            }*/}
-                {/*        </>}*/}
-
-                {/*        <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*            <div className="row">*/}
-                {/*                <div className="col-10">*/}
-                {/*                    <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                        <div className="taskCardHead">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <h2 className="col-10">Заглушка сценария для модульного тестирования</h2>*/}
-                {/*                                <h2 className="col-2 text-right">25 февраля</h2>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                        <div className="taskCardBody d-none">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <div className="col-10 font-weight-light">*/}
-                {/*                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.*/}
-
-                {/*                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    </div>*/}
-                {/*                </div>*/}
-                {/*                <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                    <button className="btnBlue">Изменить</button>*/}
-                {/*                    <button className="btnRed">Удалить</button>*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*    }*/}
-                {/*    { plan.level === 3 &&*/}
-                {/*    <>*/}
-                {/*        <div className="row listOfActualTasks">*/}
-                {/*            <h1  className="offset-2 col-8">Текущие задачи</h1>*/}
-                {/*            {*/}
-                {/*                nonDoneActualTasks.map( (task) => {*/}
-                {/*                    return (*/}
-                {/*                        <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <div className="col-10">*/}
-                {/*                                    <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                        <div className="taskCardHead">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                        <div className="taskCardBody d-none">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <div className="col-10 font-weight-light">*/}
-                {/*                                                    <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                                </div>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                                <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                                    <button className="btnBlue">завершить</button>*/}
-                {/*                                    <button className="btnBlue">изменить</button>*/}
-                {/*                                    <button className="btnRed">удалить</button>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    )*/}
-                {/*                })*/}
-                {/*            }*/}
-                {/*        </div>*/}
-                {/*        <div className="row listOfFutureTasks">*/}
-                {/*            <h1  className="offset-2 col-8">Предстоящие задачи</h1>*/}
-                {/*            {*/}
-                {/*                nonDoneFutureTasks.map( (task) => {*/}
-                {/*                    return (*/}
-                {/*                        <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <div className="col-10">*/}
-                {/*                                    <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                        <div className="taskCardHead">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                        <div className="taskCardBody d-none">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <div className="col-10 font-weight-light">*/}
-                {/*                                                    <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                                </div>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                                <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                                    <button className="btnBlue">завершить</button>*/}
-                {/*                                    <button className="btnBlue">изменить</button>*/}
-                {/*                                    <button className="btnRed">удалить</button>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    )*/}
-                {/*                })*/}
-                {/*            }*/}
-                {/*        </div>*/}
-                {/*        <div className="row listOfDoneTasks text-lighten-5">*/}
-                {/*            <h1  className="offset-2 col-8">Выполненные задачи</h1>*/}
-                {/*            <div className="col-2">*/}
-                {/*                <button className="btnOrange d-none" onClick={ () => {} }>выставить оценку</button>*/}
-                {/*            </div>*/}
-                {/*            {*/}
-                {/*                doneTasks.map( (task) => {*/}
-                {/*                    return (*/}
-                {/*                        <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                            <div className="row">*/}
-                {/*                                <div className="col-10">*/}
-                {/*                                    <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                        <div className="taskCardHead">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                        <div className="taskCardBody d-none">*/}
-                {/*                                            <div className="row">*/}
-                {/*                                                <div className="col-10 font-weight-light">*/}
-                {/*                                                    <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                                </div>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                                <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                                    <button className="btnRed">вернуть</button>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    )*/}
-                {/*                })*/}
-                {/*            }*/}
-                {/*        </div>*/}
-                {/*    </>*/}
-                {/*    }*/}
-                {/*    { plan.level === 4 &&*/}
-                {/*    <div className="row listOfAllTasks">*/}
-                {/*        <div className="col-2">*/}
-                {/*            <button className="btnRed" onClick={ () => {} }>вернуть план</button>*/}
-                {/*        </div>*/}
-                {/*        <h1 className="col-8">Подведение итогов</h1>*/}
-                {/*        { userRole === 'head' &&*/}
-                {/*        <div className="col-2">*/}
-                {/*            <button className="btnGreen" onClick={ () => {} }>выставить оценку</button>*/}
-                {/*        </div>*/}
-                {/*        }*/}
-                {/*        <h2 className="offset-2 col-8"> </h2>*/}
-                {/*        {userRole === 'head' &&*/}
-                {/*        <div className="offset-2 col-8">*/}
-                {/*            <div className="input-group mb-3">*/}
-                {/*                            <textarea type="text" className="form-control"*/}
-                {/*                                      rows="3"*/}
-                {/*                                      name="descOfTask"*/}
-                {/*                                      id="descOfTask"*/}
-                {/*                                      placeholder="Описание"*/}
-                {/*                                      onChange = { ()=>{} }*/}
-                {/*                            />*/}
-                {/*            </div>*/}
-                {/*        </div>*/}
-                {/*        }*/}
-                {/*        <h1  className="offset-2 col-8">Выполненные задачи</h1>*/}
-                {/*        {*/}
-                {/*            tasks.map( (task) => {*/}
-                {/*                return (*/}
-                {/*                    <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                        <div className="row">*/}
-                {/*                            <div className="col-10">*/}
-                {/*                                <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                    <div className="taskCardHead">*/}
-                {/*                                        <div className="row">*/}
-                {/*                                            <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                    <div className="taskCardBody d-none">*/}
-                {/*                                        <div className="row">*/}
-                {/*                                            <div className="col-10 font-weight-light">*/}
-                {/*                                                <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    </div>*/}
-                {/*                )*/}
-                {/*            })*/}
-                {/*        }*/}
-                {/*    </div>*/}
-                {/*    }*/}
-                {/*    { plan.level === 5 &&*/}
-                {/*    <div className="row listOfAllTasks">*/}
-                {/*        <h1  className="offset-2 col-8">Итоговая оценка {plan.mark}. {descriptionOfMark(plan.mark)}</h1>*/}
-                {/*        {*/}
-                {/*            tasks.map( (task) => {*/}
-                {/*                return (*/}
-                {/*                    <div className="offset-2 col-10 taskCardBlock">*/}
-                {/*                        <div className="row">*/}
-                {/*                            <div className="col-10">*/}
-                {/*                                <div className="taskCard" onClick={ clickTaskCard }>*/}
-                {/*                                    <div className="taskCardHead">*/}
-                {/*                                        <div className="row">*/}
-                {/*                                            <h2 className="col-10">{task.name}</h2>*/}
-                {/*                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                    <div className="taskCardBody d-none">*/}
-                {/*                                        <div className="row">*/}
-                {/*                                            <div className="col-10 font-weight-light">*/}
-                {/*                                                <h2 className="font-weight-light">{task.description}</h2>*/}
-                {/*                                            </div>*/}
-                {/*                                        </div>*/}
-                {/*                                    </div>*/}
-                {/*                                </div>*/}
-                {/*                            </div>*/}
-                {/*                            <div className="col-2 text-center buttonSection d-none">*/}
-                {/*                                <button className="btnBlue">Изменить</button>*/}
-                {/*                                <button className="btnRed">Удалить</button>*/}
-                {/*                            </div>*/}
-                {/*                        </div>*/}
-                {/*                    </div>*/}
-                {/*                )*/}
-                {/*            })*/}
-                {/*        }*/}
-                {/*    </div>*/}
-                {/*    }*/}
-                {/*</div>*/}
-            </main>
-            }
+            </>}</main>
         </>
     )
-
-    return (
-        <>{
-
-        plan.map((plan, index) => {
-        console.log(plan.level)
-        switch (plan.level) {
-            case 1: return (
-                <main className="container tyro" key={index}>
-                    <div className="flexCon flexConForTyro">
-                        <div className="flexItem invisible">
-                            <button className="btnBlue">заглушка</button>
-                        </div>
-
-                        <div className="flexItem">
-                            <h2>Составьте свой план адаптации</h2>
-                        </div>
-                        <div className="flexItem">
-                            <button className="btnGreen">отправить</button>
-                        </div>
-                    </div>
-                    <div className="row addTaskBlock">
-
-                        <h1 className="offset-2 col-10">Добавление задачи</h1>
-
-                        <div className="offset-2 col-6 addTaskInputs">
-                            <div className="input-group mb-3">
-                                <input type="text" className="form-control" required
-                                       name="nameOfTask"
-                                       id="nameOfTask"
-                                       placeholder="Название"
-                                       onChange = { changeHandler }
-                                />
-                            </div>
-
-                            <div className="input-group mb-3">
-                                <textarea type="text" className="form-control"
-                                          rows="3"
-                                          name="descOfTask"
-                                          id="descOfTask"
-                                          placeholder="Описание"
-                                          onChange = { changeHandler }
-                                />
-                            </div>
-                            <button className="btnBlue">Добавить</button>
-                        </div>
-
-                        <div className="col-2">
-                            <div className="input-group mb-3">
-                                <input type="date" id="probationStart" name="probationStart" className="form-control"
-                                       max="2099-12-12"
-                                       defaultValue={ dateNow() }
-                                       onChange = { changeHandler }
-                                />
-                            </div>
-                            <div className="input-group mb-3">
-                                <input type="date" id="probationEnd" name="probationEnd" className="form-control"
-                                       max="2099-12-12"
-                                       placeholder="дата окончания"
-                                       defaultValue={ datePlus(dateNow(), 3) }
-                                       onChange = { changeHandler }
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row listOfAllTasks">
-                        { tasks.length === 0 && <h1  className="offset-2 col-10">Задачи пока что не были добавлены</h1>}
-                        { tasks.length !== 0 && <>
-                            <h1  className="offset-2 col-8">Список предстоящих задач</h1>
-                            { plan.level === 2 &&
-                            <div className="col-2">
-                                <button className="btnOrange" onClick={ () => {} }>подтвердить</button>
-                            </div>
-                            }
-                            {
-                                tasks.map( (task) => {
-                                    return (
-                                        <div className="offset-2 col-10 taskCardBlock">
-                                            <div className="row">
-                                                <div className="col-10">
-                                                    <div className="taskCard" onClick={ clickTaskCard }>
-                                                        <div className="taskCardHead">
-                                                            <div className="row">
-                                                                <h2 className="col-10">{task.name}</h2>
-                                                                <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                            </div>
-                                                        </div>
-                                                        <div className="taskCardBody d-none">
-                                                            <div className="row">
-                                                                <div className="col-10 font-weight-light">
-                                                                    <h2 className="font-weight-light">{task.description}</h2>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-2 text-center buttonSection d-none">
-                                                    <button className="btnBlue">Изменить</button>
-                                                    <button className="btnRed">Удалить</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </>}
-                    </div>
-                </main>
-            )
-            case 2: return (
-                <main className="container tyro" key={index}>
-                    <div className="flexCon">
-                        <div className="flexItem">
-                            <h2>Ваш план адаптации проходит проверку у руководителя</h2>
-                        </div>
-                    </div>
-                </main>
-            )
-            case 3: return (
-                <main className="container tyro" key={index}>
-                    <div className="flexCon flexConForTyro">
-                        <div className="flexItem">
-                            <button className="btnGreen">отправить на проверку</button>
-                        </div>
-                    </div>
-
-                    <div className="row listOfActualTasks">
-                        <h1  className="offset-2">Актуальные задачи</h1>
-                        {/*{ nonActivatedUsers.map((user, index) => {*/}
-                        {/*    return (*/}
-                        <div className="offset-2 col-10 taskCardBlock">
-                            <div className="row">
-                                <div className="col-10">
-                                    <div className="taskCard" onClick={ clickTaskCard }>
-                                        <div className="taskCardHead">
-                                            <div className="row">
-                                                <h2 className="col-10">Разработка сценария для модульного тестирования</h2>
-                                                <h2 className="col-2 text-right">25 февраля</h2>
-                                            </div>
-                                        </div>
-                                        <div className="taskCardBody d-none">
-                                            <div className="row">
-                                                <div className="col-10 font-weight-light">
-                                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.
-
-                                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-2 text-center buttonSection d-none">
-                                    <button className="btnBlue">завершить</button>
-                                </div>
-                            </div>
-                        </div>
-                        {/*    )*/}
-                        {/*}) }*/}
-                    </div>
-                    <div className="row listOfFutureTasks d-none">
-                        <h1  className="offset-2">Предстоящие задачи</h1>
-                        {/*{ nonActivatedUsers.map((user, index) => {*/}
-                        {/*    return (*/}
-                        <div className="offset-2 col-10 taskCardBlock">
-                            <div className="row">
-                                <div className="col-10">
-                                    <div className="taskCard" onClick={ clickTaskCard }>
-                                        <div className="taskCardHead">
-                                            <div className="row">
-                                                <h2 className="col-10">Разработка сценария для модульного тестирования</h2>
-                                                <h2 className="col-2 text-right">25 февраля</h2>
-                                            </div>
-                                        </div>
-                                        <div className="taskCardBody d-none">
-                                            <div className="row">
-                                                <div className="col-10 font-weight-light">
-                                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.
-
-                                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-2 text-center buttonSection d-none">
-                                    <button className="btnBlue">завершить</button>
-                                </div>
-                            </div>
-                        </div>
-                        {/*    )*/}
-                        {/*}) }*/}
-                    </div>
-                    <div className="row listOfDoneTasks text-lighten-5">
-                        <h1  className="offset-2">Выполненные задачи</h1>
-                        {/*{ nonActivatedUsers.map((user, index) => {*/}
-                        {/*    return (*/}
-                        <div className="offset-2 col-10 taskCardBlock">
-                            <div className="row">
-                                <div className="col-10">
-                                    <div className="taskCard text-black-50" onClick={ clickTaskCard }>
-                                        <div className="taskCardHead">
-                                            <div className="row">
-                                                <h2 className="col-10">Разработка сценария для модульного тестирования</h2>
-                                                <h2 className="col-2 text-right">25 февраля</h2>
-                                            </div>
-                                        </div>
-                                        <div className="taskCardBody d-none">
-                                            <div className="row">
-                                                <div className="col-10 font-weight-light">
-                                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.
-
-                                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-2 text-center buttonSection d-none">
-                                    <button className="btnRed">вернуть</button>
-                                </div>
-                            </div>
-                        </div>
-                        {/*    )*/}
-                        {/*}) }*/}
-                    </div>
-                </main>
-            )
-            case 4: return (
-                <main className="container tyro" key={index}>
-                    <div className="flexCon flexConForTyro">
-                        <div className="flexItem">
-                            <h2>Ваши результаты оценивает руководитель</h2>
-                        </div>
-                    </div>
-
-                    <div className="row listOfDoneTasks">
-                        <h1  className="offset-2">Выполненные задачи</h1>
-                        {/*{ nonActivatedUsers.map((user, index) => {*/}
-                        {/*    return (*/}
-                        <div className="offset-2 col-10 taskCardBlock">
-                            <div className="row">
-                                <div className="col-10">
-                                    <div className="taskCard text-black-50" onClick={ clickTaskCard }>
-                                        <div className="taskCardHead">
-                                            <div className="row">
-                                                <h2 className="col-10">Разработка сценария для модульного тестирования</h2>
-                                                <h2 className="col-2 text-right">25 февраля</h2>
-                                            </div>
-                                        </div>
-                                        <div className="taskCardBody d-none">
-                                            <div className="row">
-                                                <div className="col-10 font-weight-light">
-                                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.
-
-                                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/*    )*/}
-                        {/*}) }*/}
-                    </div>
-                </main>
-            )
-            case 5: return (
-                <main className="container tyro" key={index}>
-                    <div className="row summaryMessage">
-                        <h1  className="offset-2">Испытательный срок закончен</h1>
-                        <h2 className="offset-2 col-10 ">Поздравляем с успешным прохождением испытатльного срока. Ваша оценка А (Исключительно высокий уровень эффективности).</h2>
-                    </div>
-                    <div className="row summaryComment">
-                        <h1  className="offset-2">Комментарий руководителя</h1>
-                        <h2 className="offset-2 col-10 font-italic">Спасибо за огромный вклад в развитие нашей культуры и развитие компании в целом. Мы будем рады видеть вас в наших рядах снова, но уже в качестве полноценного сотрудника.
-                            <br/><br/>
-                            С уважением Дьяков Д. В.</h2>
-                    </div>
-                    <div className="row listOfDoneTasks">
-                        <h1  className="offset-2">Выполненные задачи</h1>
-                        {/*{ nonActivatedUsers.map((user, index) => {*/}
-                        {/*    return (*/}
-                        <div className="offset-2 col-10 taskCardBlock">
-                            <div className="row">
-                                <div className="col-10">
-                                    <div className="taskCard text-black-50" onClick={ clickTaskCard }>
-                                        <div className="taskCardHead">
-                                            <div className="row">
-                                                <h2 className="col-10">Разработка сценария для модульного тестирования</h2>
-                                                <h2 className="col-2 text-right">25 февраля</h2>
-                                            </div>
-                                        </div>
-                                        <div className="taskCardBody d-none">
-                                            <div className="row">
-                                                <div className="col-10 font-weight-light">
-                                                    <h2 className="font-weight-light">Настройка и обеспечение прототипов всем необходимым для выявления нарушений среди обычных граждан. Всё что подпадает под строчки закона должно соответсвовать норме, в противном случае будут предприняты меры пресечения.
-
-                                                        Созданный на основе внешних данных прототип всегда лучше, чем тот, что собрали из подручных средств на фабрике из соседней страны. Тем не менее это замечательный опыт для всех нас. Добро пожаловать.</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/*    )*/}
-                        {/*}) }*/}
-                    </div>
-                </main>
-            )
-            case undefined: return (
-
-                <main className="container tyro" key={index}>
-                    {console.log('asdf')}
-                    <div className="flexCon">
-                        <div className="flexItem">
-                            <h2>Ваш план адаптации пока что не был создан, но скоро он здесь появится</h2>
-                        </div>
-                    </div>
-                </main>
-            )
-            default:return (
-
-                <main className="container tyro" key={index}>
-                    {console.log('asdf')}
-                    <div className="flexCon">
-                        <div className="flexItem">
-                            <h2>Загрузка...</h2>
-                        </div>
-                    </div>
-                </main>
-            )
-        }
-    })}</>)
 }

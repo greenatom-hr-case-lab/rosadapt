@@ -34,7 +34,7 @@ router.post(
 
         //код создания логина
         const users = await User.find()
-        let login = 'r' + (3400 + users.length)
+        let login = 'r' + (3420 + users.length)
 
         const candidate = await User.findOne({ login })
         if (candidate) {

@@ -38,7 +38,11 @@ router.get(
     async (req, res) => {
         try {
             const task = await Task.findById(req.params.id)
-            console.log(task)
+            const plan = await Plan.findById({_id : task.planLink})
+            console.log(plan)
+            plan.countsOfAllTasks--
+            plan.save()
+
             task.remove()
 
             await res.status(201).json({message: 'Задача удалена'})

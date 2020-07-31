@@ -1,4 +1,4 @@
-export const dateFormToWords = (anyFormatDate) => {
+export const dateFormToWords = (anyFormatDate, year) => {
     const date = new Date(anyFormatDate)
     const dd = date.getDate()
     let mm = date.getMonth() + 1
@@ -41,5 +41,6 @@ export const dateFormToWords = (anyFormatDate) => {
             break
         default: break
     }
+    if (year) return dd + ' ' + mm + ' ' + date.getFullYear()
     return dd + ' ' + mm
 }

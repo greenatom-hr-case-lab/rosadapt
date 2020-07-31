@@ -75,6 +75,10 @@ router.get(
             const task = await Task.findById(req.params.id)
             task.done = true
             task.save()
+
+            const plan = await Plan.findById(task.planLink)
+            plan.countsOfDoneTasks++
+            plan.save()
             await res.json({message: 'Завершено'})
         } catch (e) {
             await res.status(500).json({message: 'Не удалось завершить задание'})
@@ -88,6 +92,10 @@ router.get(
             const task = await Task.findById(req.params.id)
             task.done = false
             task.save()
+
+            const plan = await Plan.findById(task.planLink)
+            plan.countsOfDoneTasks--
+            plan.save()
             await res.json({message: 'Возвращено'})
         } catch (e) {
             await res.status(500).json({message: 'Не удалось вернуть задание'})
@@ -96,3 +104,25 @@ router.get(
 )
 
 module.exports = router
+
+// $('#percent').on('change', function(){
+//     var val = parseInt($(this).val());
+//     var $circle = $('#svg #bar');
+//
+//     if (isNaN(val)) {
+//         val = 100;
+//     }
+//     else{
+//         var r = $circle.attr('r');
+//         var c = Math.PI*(r*2);
+//
+//         if (val < 0) { val = 0;}
+//         if (val > 100) { val = 100;}
+//
+//         var pct = ((100-val)/100)*c;
+//
+//         $circle.css({ strokeDashoffset: pct});
+//
+//         $('#cont').attr('data-pct',val);
+//     }
+// });

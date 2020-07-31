@@ -10,6 +10,7 @@ import {dateFormToWords} from "../functions/dateFormToWords"
 import {toggleClass} from "../functions/toggleClass";
 import {descriptionOfMark} from "../functions/descriptionOfMark"
 import {filterTasks} from "../functions/filterTasks"
+import {TaskCard} from "../components/TaskCard"
 
 export const PlanPage = () => {
     const {userRole, token} = useContext(AuthContext)
@@ -186,14 +187,14 @@ export const PlanPage = () => {
                                 <button className="btnBlue">Назад</button>
                             </NavLink>}
                         </div>
-                        <h1 className="col-10">Стажёр {tyro.name.lastName + ' ' + tyro.name.firstName + ' ' + tyro.name.middleName}</h1>
+                        <h1 className="col-10">стажёр {tyro.name.lastName + ' ' + tyro.name.firstName + ' ' + tyro.name.middleName}</h1>
 
                         <h2 className="offset-2 col-10">Отдел: {tyro.dept}</h2>
                         <h2 className="offset-2 col-10">Должность: {tyro.pos}</h2>
                         <h2 className="offset-2 col-10">Статус плана атестации: {statusOfPlanRus(plan).toLowerCase()}</h2>
                         { userRole === 'hr' && <h2 className="offset-2 col-10">Руководитель: {head.name.lastName + ' ' + head.name.firstName + ' ' + head.name.middleName }</h2>}
                         <h2 className="offset-2 col-10">Период адаптации: с {dateFormToWords(plan.date.dateStart)} по {dateFormToWords(plan.date.dateEnd)}</h2>
-                        <h2 className="offset-2 col-10">Дата создания плана: {dateFormToWords(plan.date.created)}</h2>
+                        <h2 className="offset-2 col-10">Дата создания плана: {dateFormToWords(plan.date.created, true)}</h2>
                         { plan.level === 5 && <h2 className="offset-2 col-10">{plan.summary}</h2>}
                     </div>
                     <div className="row bodyOfPlanPage">
@@ -246,44 +247,38 @@ export const PlanPage = () => {
                             <div className="row listOfAllTasks">
                                 { tasks.length === 0 && <h1  className="offset-2 col-10">Задачи пока что не были добавлены</h1>}
                                 { tasks.length !== 0 && <>
-                                    <h1  className="offset-2 col-8">Список предстоящих задач</h1>
-                                    { plan.level === 2 &&
-                                        <div className="col-2">
-                                            <button className="btnOrange" onClick={ nextLevel }>Подтвердить</button>
-                                        </div>
-                                    }
-                                    {
-                                        tasks.map( (task, i) => {
-                                            return (
-                                                <div className="offset-2 col-10 taskCardBlock" key={i}>
-                                                    <div className="row">
-                                                        <div className="col-10">
-                                                            <div className="taskCard" onClick={ clickTaskCard }>
-                                                                <div className="taskCardHead">
-                                                                    <div className="row">
-                                                                        <h2 className="col-10">{task.name}</h2>
-                                                                        <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                    </div>
+                                    <div className="offset-2 col-10">
+                                        <div className="row">
+                                            <div className="col-10">
+                                                <div className="row">
+                                                    <h1  className="col-10">Список предстоящих задач</h1>
+                                                    { plan.level === 2 &&
+                                                        <div className="col-2 buttonSection">
+                                                            <button className="btnGreen" onClick={ nextLevel }>Подтвердить</button>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            {
+                                                tasks.map( (task, i) => {
+                                                    return (
+                                                        <div className="col-10 taskCardBlock" key={i}>
+                                                            <div className="row">
+                                                                <div className="col-10">
+                                                                    <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                                 </div>
-                                                                <div className="taskCardBody d-none">
-                                                                    <div className="row">
-                                                                        <div className="col-10 font-weight-light">
-                                                                            <h2 className="font-weight-light">{task.description}</h2>
-                                                                        </div>
-                                                                    </div>
+                                                                <div className="col-2 text-center buttonSection d-none">
+                                                                    <button className="btnBlue">Изменить</button>
+                                                                    <button className="btnRed" name={task._id} onClick={ deleteHandlerTask }>Удалить</button>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-2 text-center buttonSection d-none">
-                                                            <button className="btnBlue">Изменить</button>
-                                                            <button className="btnRed" name={task._id} onClick={ deleteHandlerTask }>Удалить</button>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
 
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })
-                                    }
                                 </>}
                             </div>
                         </>}
@@ -338,21 +333,8 @@ export const PlanPage = () => {
                                                     <div className="offset-2 col-10 taskCardBlock" key={task._id}>
                                                         <div className="row">
                                                             <div className="col-10">
-                                                                <div className="taskCard" onClick={ clickTaskCard }>
-                                                                    <div className="taskCardHead">
-                                                                        <div className="row">
-                                                                            <h2 className="col-10">{task.name}</h2>
-                                                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="taskCardBody d-none">
-                                                                        <div className="row">
-                                                                            <div className="col-10 font-weight-light">
-                                                                                <h2 className="font-weight-light">{task.description}</h2>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                <TaskCard task={task} clickTaskCard={clickTaskCard}/>
+
                                                             </div>
                                                             <div className="col-2 text-center buttonSection d-none">
                                                                 <button className="btnBlue" onClick={ doneHandlerTask } name={task._id}>Завершить</button>
@@ -375,21 +357,7 @@ export const PlanPage = () => {
                                                     <div className="offset-2 col-10 taskCardBlock"  key={task._id}>
                                                         <div className="row">
                                                             <div className="col-10">
-                                                                <div className="taskCard" onClick={ clickTaskCard }>
-                                                                    <div className="taskCardHead">
-                                                                        <div className="row">
-                                                                            <h2 className="col-10">{task.name}</h2>
-                                                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="taskCardBody d-none">
-                                                                        <div className="row">
-                                                                            <div className="col-10 font-weight-light">
-                                                                                <h2 className="font-weight-light">{task.description}</h2>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                             </div>
                                                             <div className="col-2 text-center buttonSection d-none">
                                                                 <button className="btnBlue" onClick={ doneHandlerTask } name={task._id}>Завершить</button>
@@ -412,21 +380,7 @@ export const PlanPage = () => {
                                                     <div className="offset-2 col-10 taskCardBlock"  key={task._id}>
                                                         <div className="row">
                                                             <div className="col-10">
-                                                                <div className="taskCard" onClick={ clickTaskCard }>
-                                                                    <div className="taskCardHead">
-                                                                        <div className="row">
-                                                                            <h2 className="col-10">{task.name}</h2>
-                                                                            <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="taskCardBody d-none">
-                                                                        <div className="row">
-                                                                            <div className="col-10 font-weight-light">
-                                                                                <h2 className="font-weight-light">{task.description}</h2>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                             </div>
                                                             <div className="col-2 text-center buttonSection d-none">
                                                                 <button className="btnRed" name={task._id} onClick={ unDoneHandlerTask }>Вернуть</button>
@@ -450,21 +404,7 @@ export const PlanPage = () => {
                                             <div className="offset-2 col-10 taskCardBlock" key={task._id}>
                                                 <div className="row">
                                                     <div className="col-10">
-                                                        <div className="taskCard" onClick={ clickTaskCard }>
-                                                            <div className="taskCardHead">
-                                                                <div className="row">
-                                                                    <h2 className="col-10">{task.name}</h2>
-                                                                    <h2 className="col-2 text-right">c {dateFormToWords(task.date.dateStart)}</h2>
-                                                                </div>
-                                                            </div>
-                                                            <div className="taskCardBody d-none">
-                                                                <div className="row">
-                                                                    <div className="col-10 font-weight-light">
-                                                                        <h2 className="font-weight-light">{task.description}</h2>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        <TaskCard task={task} clickTaskCard={clickTaskCard}/>
                                                     </div>
                                                 </div>
                                             </div>

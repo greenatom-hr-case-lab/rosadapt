@@ -110,7 +110,7 @@ export const HeadPage = () => {
                                         <div className="userCardHead">
                                             <div className="row">
                                                 <h2 className="col-8">{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</h2>
-                                                <h2 className="col-2 text-center">{roleRus(user.role)}</h2>
+                                                <h2 className="col-2 text-center">{statusOfPlanRus(plan)}</h2>
                                                 <h2 className="col-2 text-right text-black-50">{user.login}</h2>
                                             </div>
                                         </div>
@@ -139,7 +139,7 @@ export const HeadPage = () => {
                                                     {!!plan && user.role === "tyro" &&
                                                     <>
                                                         <h2>{ datePeriodFormat() }</h2>
-                                                        <h2>{ statusOfPlanRus(plan) }</h2>
+                                                        <h2>{  }</h2>
                                                     </>
                                                     }
 

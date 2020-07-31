@@ -68,7 +68,9 @@ router.post(
 
         try {
             const {name, description, dateStart, dateEnd, planLink} = req.body
-
+            const plan = await Plan.findById(planLink)
+            plan.countsOfAllTasks++
+            plan.save()
             const task = new Task({
                 name,
                 description,

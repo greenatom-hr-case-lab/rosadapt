@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react"
 import {AuthContext} from "../../context/AuthContext"
-import {NavLink} from "react-router-dom"
+import {NavLink, useHistory} from "react-router-dom"
 import {useMessage} from "../../hooks/message.hook"
 import {useHttp} from "../../hooks/http.hook"
 import {roleRus} from "../../functions/roleRus"
@@ -12,6 +12,7 @@ import logoOfPageSVG from "../../img/showList.svg"
 export const HrShowPage = () => {
     const auth = useContext(AuthContext)
     const message = useMessage()
+    const history = useHistory()
     const {request, error, clearError} = useHttp()
     const [users, setUsers] = useState([])
     const [plans, setPlans] = useState([])
@@ -167,7 +168,7 @@ export const HrShowPage = () => {
                     <button onClick={ purpleSwitch } className="btnPurple">Все пользователи</button>
                 </div></div></div>
                 { users.map((user, index) => {
-                    let plan = plans.find(plan => plan.tyroLink === user._id)
+                    let plan = plans.find(plan => plan._id === user.planLink)
                     let head
                     if (!!plan) head = activatedUsers.find((item) => item._id === plan.headLink)
                     const classNameForUserCard = () => {
@@ -194,27 +195,32 @@ export const HrShowPage = () => {
                                     <div className={ classNameForUserCard() } onClick={ clickUserCard }>
                                         <div className="userCardHead">
                                             <div className="row">
-                                                <h2 className="col-8">{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</h2>
-                                                <h2 className="col-2 text-center">{roleRus(user.role)}</h2>
+                                                <h2 className="col-7">{user.name.lastName + ' ' + user.name.firstName + ' ' + user.name.middleName}</h2>
+                                                <h2 className="col-3 text-center">{roleRus(user.role)}</h2>
                                                 <h2 className="col-2 text-right text-black-50">{user.login}</h2>
                                             </div>
                                         </div>
                                         <div className="userCardBody d-none">
                                             <div className="row">
-                                                <div className="col-8">
+                                                <div className="col-7">
                                                     <h2>{user.dept}</h2>
                                                     <h2>{user.pos}</h2>
                                                     {!!plan && user.role === "tyro" &&
                                                     <>
                                                         <h2>Руководитель {head.name.lastName + ' ' + head.name.firstName + ' ' + head.name.middleName}</h2>
-                                                        <button className="btnBlue">Открыть план адаптации</button>
+                                                        <NavLink to={ `/plan/${plan._id}` }>
+                                                            <button className="btnBlue">Открыть план адаптации</button>
+                                                        </NavLink>
                                                     </>
                                                     }
                                                     {!plan && user.role === "tyro" &&
+                                                    <NavLink to={ `/createPlan/${user._id}` }>
                                                         <button className="btnOrange">Создать план адаптации</button>
+
+                                                    </NavLink>
                                                     }
                                                 </div>
-                                                <div className="col-2 text-center">
+                                                <div className="col-3 text-center">
                                                     {!!plan && user.role === "tyro" &&
                                                     <>
                                                         <h2>{ datePeriodFormat() }</h2>
