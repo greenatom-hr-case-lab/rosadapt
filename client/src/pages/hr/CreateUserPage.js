@@ -109,6 +109,7 @@ export const CreateUserPage = () => {
                                 <option defaultValue="Космические войска" value="Космические войска">Космические войска</option>
                                 <option value="Отдел создания ядер">Отдел создания ядер</option>
                                 <option value="Атомная топография">Атомная топография</option>
+                                <option value="Отдел кадров">Отдел кадров</option>
                             </select>
                             <div className="input-group-append">
                                 <label htmlFor="dept" className="input-group-text">Отдел</label>
@@ -123,7 +124,8 @@ export const CreateUserPage = () => {
                                 <option defaultValue="none"></option>
                                 <option defaultValue="Младший научный сотрудник">Младший научный сотрудник</option>
                                 <option value="Старший научный сотрудник">Старший научный сотрудник</option>
-                                <option value="Мастер">Мастер</option>
+                                <option value="Мастер">Разработчик ПО</option>
+                                <option value="Старший сотрудник">Старший сотрудник</option>
                             </select>
                             <div className="input-group-append">
                                 <label htmlFor="pos" className="input-group-text">Должность</label>

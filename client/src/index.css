@@ -130,7 +130,7 @@ h3{
     font-weight: 400;
 }
 nav{
-    margin: 50px
+    margin: 100px
 }
 main{
     margin-bottom: 300px;
@@ -141,6 +141,9 @@ button:active, button:focus {
 }
 button::-moz-focus-inner {
     border: 0;
+}
+textarea{
+    resize: none;
 }
 .c{
     border: 1px solid red;
@@ -218,6 +221,9 @@ button::-moz-focus-inner {
     background: #DD5BE8 !important;
     color: white !important;
 }
+
+.bgGreen{background: rgba(88, 199, 55, 0.11) !important;}
+.bgOrange{background: rgba(246, 138, 77, 0.11)!important;}
 /*profile*/
 #logo{
     height: 40px;
@@ -238,7 +244,7 @@ button::-moz-focus-inner {
 
 /*HR*//*main page*/
 .flexCon{
-    padding: 100px;
+    margin-bottom: 100px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -271,7 +277,7 @@ button::-moz-focus-inner {
 .logoOfPage {
     position: absolute;
     height: 500px;
-    top: -350px;
+    top: -475px;
     left: 50%;
     transform: translateX(-50%);
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0,0) 90%);
@@ -325,7 +331,7 @@ form #probationStart{
 .userCard > * {
     pointer-events: none;
 }
-.userCard .userCardBody .btnBlue{
+.userCard .userCardBody .btnBlue, .userCard .userCardBody .btnOrange, .userCard .userCardBody .btnGreen{
     pointer-events: auto;
 }
 .userCardBlock:hover .userCard{
@@ -346,4 +352,55 @@ form #probationStart{
     margin-bottom: 0px !important;
 }
 .buttonSwitch{margin-bottom: 55px; margin-top: 55px}
-.tyroWithoutPlan{background: rgba(246, 138, 77, 0.11);}
+
+
+/*TYRO*/
+.flexConForTyro{
+    margin-bottom: 30px;
+}
+
+.addTaskBlock h1, .addTaskBlock, .listOfAllTasks h1, h1{
+    margin-bottom: 30px;
+}
+.tyroPage h2, .planPage h2{
+    margin-bottom: 0;
+}
+.taskCardBlock{
+    margin-bottom: 20px;
+}
+.taskCardBlock .buttonSection button{
+    margin: 5px;
+}
+.taskCard{
+    background: #FFFFFF;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+
+    padding: 20px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+.taskCard > * {
+    pointer-events: none;
+}
+.taskCardBody{
+    margin-top: 20px;
+}
+.listOfActualTasks, .listOfFutureTasks, .summaryComment, .summaryMessage{
+    margin-bottom: 40px;
+}
+
+/*PLANPAGE*/
+.headOfPlanPage{
+    margin-bottom: 50px;
+}
+.headOfPlanPage h1{
+    line-height: 40px;
+}
+.headOfPlanPage h2{
+    margin-bottom: 15px;
+}
+.summaryForm{
+    margin-bottom: 50px;
+}

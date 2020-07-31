@@ -1,12 +1,13 @@
 import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
-import {ProfilePage} from "./pages/ProfilePage";
-import {TyroPage} from "./pages/TyroPage";
+import {TyroPage} from "./pages/tyro/TyroPage";
 import {HrPage} from "./pages/hr/HrPage";
 import {AuthPage} from "./pages/AuthPage";
 import {CreateUserPage} from "./pages/hr/CreateUserPage";
 import {CreatePlanPage} from "./pages/hr/CreatePlanPage";
 import {HrShowPage} from "./pages/hr/HrShowPage";
+import {HeadPage} from "./pages/head/HeadPage";
+import {PlanPage} from "./pages/PlanPage";
 
 export const useRoutes = (isAuthenticated, userRole) => {
     if (isAuthenticated){
@@ -45,7 +46,10 @@ export const useRoutes = (isAuthenticated, userRole) => {
                 return(
                     <Switch>
                         <Route path="/main" exact>
-                            <ProfilePage />
+                            <HeadPage />
+                        </Route>
+                        <Route path="/plan/:id" exact>
+                            <PlanPage />
                         </Route>
                         <Redirect to="/main" />
                     </Switch>

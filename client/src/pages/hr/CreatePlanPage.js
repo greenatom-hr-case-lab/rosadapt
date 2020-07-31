@@ -50,7 +50,7 @@ export const CreatePlanPage = () => {
 
     const createHandler = async () => {
         try {
-            const data = await request('/api/create/createPlan', 'POST', {...form}, {
+            const data = await request('/api/create/plan', 'POST', {...form}, {
                 Authorization: `Bearer ${auth.token}`
             })
             message(data.message)

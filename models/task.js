@@ -27,6 +27,7 @@ const schema = new Schema({
             type: Date,
             required: true
         },
+        dateFinished: Date,
         created: { 
             type: Date,
             default: Date.now

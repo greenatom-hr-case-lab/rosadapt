@@ -7,7 +7,7 @@ const {check, validationResult} = require('express-validator')
 const router = Router()
 
 router.post(
-    '/plan',
+    '/user', /*ШАБЛОН*/
     [
         check('tyroLink','Некорректное имя').exists(),
         check('headLink','Некорректное отчество').exists(),
@@ -24,24 +24,6 @@ router.post(
                     message: 'Некорретные данные'
                 })
             }
-
-            const {tyroLink, headLink, probationStart, probationEnd} = req.body
-            const plan = new Plan({
-                tyroLink,
-                headLink,
-                hrLink: req.user.userId,
-                date: {
-                    dateStart: probationStart,
-                    dateEnd: probationEnd
-                },
-            })
-
-            User.findById(tyroLink, function(err, tyro) {
-                if (err) throw err
-                tyro.planLink = plan._id
-                tyro.save()
-            })
-
             await plan.save()
             await res.status(201).json({message: 'План создан'})
         } catch (e) {
@@ -50,36 +32,16 @@ router.post(
     }
 )
 
-router.post(
-    '/task',
-    [
-        check('name','Некорректное имя').exists(),
-        check('description','Некорректное отчество').exists()
-    ], authMW,
+router.get(
+    '/task/:id',
+    authMW,
     async (req, res) => {
-        const errors = validationResult(req)
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array(),
-                message: 'Некорретные данные'
-            })
-        }
-
         try {
-            const {name, description, dateStart, dateEnd, planLink} = req.body
+            const task = await Task.findById(req.params.id)
+            console.log(task)
+            task.remove()
 
-            const task = new Task({
-                name,
-                description,
-                planLink,
-                date: {
-                    dateStart,
-                    dateEnd
-                }
-            })
-            task.save()
-            await res.status(201).json({message: 'Задача добавлена'})
+            await res.status(201).json({message: 'Задача удалена'})
         } catch (e) {
             await res.status(500).json({message: 'Не удалось получить список планов'})
         }

@@ -1,11 +1,12 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react"
 import {AuthContext} from "../../context/AuthContext"
-import {NavLink} from "react-router-dom";
-import {useMessage} from "../../hooks/message.hook";
-import {useHttp} from "../../hooks/http.hook";
-import {roleRus} from "../../functions/roleRus";
+import {NavLink} from "react-router-dom"
+import {useMessage} from "../../hooks/message.hook"
+import {useHttp} from "../../hooks/http.hook"
+import {roleRus} from "../../functions/roleRus"
+import {toggleClass} from "../../functions/toggleClass"
+import {statusOfPlanRus} from "../../functions/statusOfPlanRus"
 import logoOfPageSVG from "../../img/showList.svg"
-
 
 
 export const HrShowPage = () => {
@@ -21,18 +22,10 @@ export const HrShowPage = () => {
         message(error)
         clearError()
         getListOfUsers()
-        getPlanOf()
+        getPlans()
         window.M.updateTextFields()
 
     }, [error, message, clearError])
-
-    const toggleClass = (element, className) => {
-        if (element.classList.contains(className)){
-            element.classList.remove(className)
-        } else {
-            element.classList.add(className)
-        }
-    }
 
     const clickUserCard = (event) =>{
         if (event.target.tagName !== 'BUTTON'){
@@ -79,9 +72,9 @@ export const HrShowPage = () => {
             setUsers(filterUsers(data.users, true, 'tyro', 'own'))
         } catch (e) {}
     }
-    const getPlanOf = async () => {
+    const getPlans = async () => {
         try {
-            const data = await request('/api/list/planUser', 'POST', [], {
+            const data = await request('/api/list/plans', 'POST', [], {
                 Authorization: `Bearer ${auth.token}`
             })
             message(data.message)
@@ -177,21 +170,9 @@ export const HrShowPage = () => {
                     let plan = plans.find(plan => plan.tyroLink === user._id)
                     let head
                     if (!!plan) head = activatedUsers.find((item) => item._id === plan.headLink)
-                    console.log(head)
-
                     const classNameForUserCard = () => {
                         if (!!plan || user.role !== "tyro") return "userCard"
-                        return "userCard tyroWithoutPlan"
-                    }
-                    const statusOfPlan = () => {
-                        switch (plan.level) {
-                            case 1: return "Заполнение сотрудником"
-                            case 2: return "Согласование руководителем"
-                            case 3: return "Выполнение"
-                            case 4: return "Оценка руководителем"
-                            case 5: return "Оценка завершена"
-                            default:return "none"
-                        }
+                        return "userCard bgOrange"
                     }
 
                     const datePeriodFormat = () => {
@@ -237,7 +218,7 @@ export const HrShowPage = () => {
                                                     {!!plan && user.role === "tyro" &&
                                                     <>
                                                         <h2>{ datePeriodFormat() }</h2>
-                                                        <h2>{ statusOfPlan() }</h2>
+                                                        <h2>{ statusOfPlanRus(plan) }</h2>
                                                     </>
                                                     }
 
